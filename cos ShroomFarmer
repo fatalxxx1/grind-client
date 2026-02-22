@@ -52,7 +52,7 @@ do
     local WindUI = loadstring(game:HttpGet("https://github.com/Footagesus/WindUI/releases/latest/download/main.lua"))()
 
     local Window = WindUI:CreateWindow({
-        Title = "Shroom หหหหหหหหหหหหหหหหห",
+        Title = "Shroom Grinder",
         Icon = "door-open"
     })
 
@@ -115,8 +115,8 @@ do
             end
 
             local safePart = Instance.new("Part")
-            safePart.Size = Vector3.new(200, 1, 200)
-            safePart.Transparency = 0.7
+            safePart.Size = Vector3.new(200, 5, 200)
+            safePart.Transparency = 0.5
             safePart.Anchored = true
             safePart.Name = "."
             safePart.CFrame = CFrame.new(0, 1500, 0)
@@ -125,7 +125,7 @@ do
             task.spawn(function()
                 while _G.TG do
                     pcall(function()
-                        Diet = dietLabel.Text
+                        Diet = tostring(dietLabel.Text)
                         -- Refresh root in case of respawn
                         Var.Root = GetRoot()
 
@@ -149,7 +149,7 @@ do
                             Carcass, Berry, Water = false, false, true
                         end
 
-                        if not ContainerGui.Visible and dietLabel then
+                        if  ContainerGui.Visible == false and dietLabel then
 
                             -- HUNGER
                             if HMin <= HMax and IsIdle() then
@@ -173,7 +173,7 @@ do
                                 end
                             else
                                 Var.Root:SetAttribute("State", "Idle")
-                                Var.Root.CFrame = safePart.CFrame * CFrame.new(0, 5, 0)
+                                Var.Root.CFrame = safePart.CFrame * CFrame.new(0, 10, 0)
                             end
                         end
                     end)
