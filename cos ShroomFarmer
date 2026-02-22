@@ -103,7 +103,7 @@ do
 
                     task.spawn(function()
                         while _G.TG do
-                            pcall(function()
+                          
                                 local HMin, HMax = hunger.Text:match('(%d+)%/(%d+)')
                                 HMin = tonumber(HMin)
                                 HMax = tonumber(HMax)
@@ -152,8 +152,7 @@ do
                                 end
 
                                 task.wait()
-                            end)
-
+                          
                         end
                     end)
 
