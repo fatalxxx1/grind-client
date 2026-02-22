@@ -52,7 +52,7 @@ do
     local WindUI = loadstring(game:HttpGet("https://github.com/Footagesus/WindUI/releases/latest/download/main.lua"))()
 
     local Window = WindUI:CreateWindow({
-        Title = "Shroom AAAA",
+        Title = "Shroom Grinder",
         Icon = "door-open"
     })
 
@@ -109,8 +109,7 @@ do
                 return
             end
 
-            -- START
-            Diet = tostring(dietLabel.Text)
+          
 
             -- Prevent duplicate safe parts
             if workspace:FindFirstChild(".") then
@@ -128,7 +127,7 @@ do
             task.spawn(function()
                 while _G.TG do
                     pcall(function()
-
+                          Diet = tostring(dietLabel.Text)
                         -- Refresh root in case of respawn
                         Var.Root = GetRoot()
 
