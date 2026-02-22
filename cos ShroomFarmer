@@ -1,41 +1,40 @@
 repeat
     task.wait()
 until game:IsLoaded()
+local player = game.Players.LocalPlayer
 
+local function GetCharacter()
+    return player.Character or player.CharacterAdded:Wait()
+end
+
+local function GetRoot()
+    return GetCharacter():WaitForChild("HumanoidRootPart")
+end
+
+local Var = {
+    Char = game.Players.LocalPlayer.Character,
+    Root = GetRoot(),
+    Food = workspace.Interactions.Food,
+    Lake = workspace.Interactions.Lakes
+}
+
+if Var.Root:GetAttribute("State") == nil then
+    Var.Root:SetAttribute("State", "Idle")
+end
+
+local function IsIdle()
+    return Var.Root:GetAttribute("State") == "Idle"
+end
+
+local Re = {
+    Food = game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Food"),
+    Drink = game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("DrinkRemote")
+}
+
+local function Dist(a, b)
+    return (a - b).Magnitude
+end
 do
-    local player = game.Players.LocalPlayer
-
-    local function GetCharacter()
-        return player.Character or player.CharacterAdded:Wait()
-    end
-
-    local function GetRoot()
-        return GetCharacter():WaitForChild("HumanoidRootPart")
-    end
-
-    local Var = {
-        Char = game.Players.LocalPlayer.Character,
-        Root = GetRoot(),
-        Food = workspace.Interactions.Food,
-        Lake = workspace.Interactions.Lakes
-    }
-
-    if Var.Root:GetAttribute("State") == nil then
-        Var.Root:SetAttribute("State", "Idle")
-    end
-
-    local function IsIdle()
-        return Var.Root:GetAttribute("State") == "Idle"
-    end
-
-    local Re = {
-        Food = game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Food"),
-        Drink = game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("DrinkRemote")
-    }
-
-    local function Dist(a, b)
-        return (a - b).Magnitude
-    end
 
     local WindUI = loadstring(game:HttpGet("https://github.com/Footagesus/WindUI/releases/latest/download/main.lua"))()
 
