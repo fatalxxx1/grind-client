@@ -4,7 +4,7 @@ until game:IsLoaded()
 
 local player = game.Players.LocalPlayer
 
---// Character Handling
+
 local function GetCharacter()
     return player.Character or player.CharacterAdded:Wait()
 end
@@ -14,7 +14,7 @@ local function GetRoot()
     return char:WaitForChild("HumanoidRootPart")
 end
 
---// Vars
+-- // Vars
 local Var = {
     Char = GetCharacter(),
     Root = GetRoot(),
@@ -22,13 +22,13 @@ local Var = {
     Lake = workspace:WaitForChild("Interactions"):WaitForChild("Lakes")
 }
 
--- Update character on respawn
+
 player.CharacterAdded:Connect(function()
     Var.Char = GetCharacter()
     Var.Root = GetRoot()
 end)
 
---// Default State
+-- // Default State
 if Var.Root:GetAttribute("State") == nil then
     Var.Root:SetAttribute("State", "Idle")
 end
@@ -37,7 +37,7 @@ local function IsIdle()
     return Var.Root and Var.Root:GetAttribute("State") == "Idle"
 end
 
---// Remotes (kept for future use)
+
 local Re = {
     Food = game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Food"),
     Drink = game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("DrinkRemote")
@@ -47,7 +47,7 @@ local function Dist(a, b)
     return (a - b).Magnitude
 end
 
---// UI
+
 do
     local WindUI = loadstring(game:HttpGet("https://github.com/Footagesus/WindUI/releases/latest/download/main.lua"))()
 
@@ -72,7 +72,7 @@ do
     local Diet = nil
     local Carcass, Berry, Water = false, false, false
 
-    -- Wait for GUI safely
+   
     local PlayerGui = player:WaitForChild("PlayerGui")
     local CreatureGui = PlayerGui:WaitForChild("CreatureInfoGui")
     local ContainerFrame = CreatureGui:WaitForChild("ContainerFrame")
@@ -109,8 +109,6 @@ do
                 return
             end
 
-          
-
             -- Prevent duplicate safe parts
             if workspace:FindFirstChild(".") then
                 workspace["."]:Destroy()
@@ -127,7 +125,7 @@ do
             task.spawn(function()
                 while _G.TG do
                     pcall(function()
-                          Diet = tostring(dietLabel.Text)
+                        Diet = tostring(dietLabel.Text)
                         -- Refresh root in case of respawn
                         Var.Root = GetRoot()
 
@@ -135,10 +133,10 @@ do
                         local HMin, HMax = hunger.Text:match("(%d+)%/(%d+)")
                         local TMin, TMax = thirst.Text:match("(%d+)%/(%d+)")
 
-                        HMin = tonumber(HMin) 
-                        HMax = tonumber(HMax) 
-                        TMin = tonumber(TMin) 
-                        TMax = tonumber(TMax) 
+                        HMin = tonumber(HMin)
+                        HMax = tonumber(HMax)
+                        TMin = tonumber(TMin)
+                        TMax = tonumber(TMax)
 
                         -- Diet logic
                         if Diet == "Herbivore" or Diet == "Omnivore" then
@@ -155,9 +153,11 @@ do
 
                             -- HUNGER
                             if HMin <= HMax and IsIdle() then
-                                Var.Root:SetAttribute("State", "Eating")
+                                if Carcass or Berry then
+                                    Var.Root:SetAttribute("State", "Eating")
+                                end
 
-                            -- THIRST
+                                -- THIRST
                             elseif TMin <= TMax and IsIdle() then
                                 if Water then
                                     Var.Root:SetAttribute("State", "Drinking")
