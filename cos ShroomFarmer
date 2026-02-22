@@ -52,7 +52,7 @@ do
     local WindUI = loadstring(game:HttpGet("https://github.com/Footagesus/WindUI/releases/latest/download/main.lua"))()
 
     local Window = WindUI:CreateWindow({
-        Title = "Shroom Grinder v1111",
+        Title = "Shroom AAAA",
         Icon = "door-open"
     })
 
@@ -83,7 +83,7 @@ do
     local ContainerGui = PlayerGui:WaitForChild("SaveSelectionGui").ContainerFrame
 
     Tab1:Section({
-        Title = "Settings",
+        Title = tostring(Diet),
         Box = true,
         TextTransparency = 0.05,
         TextXAlignment = "Center",
@@ -121,7 +121,6 @@ do
             safePart.Size = Vector3.new(200, 1, 200)
             safePart.Transparency = 0.7
             safePart.Anchored = true
-            safePart.CanCollide = true
             safePart.Name = "."
             safePart.CFrame = CFrame.new(0, 1500, 0)
             safePart.Parent = workspace
@@ -137,10 +136,10 @@ do
                         local HMin, HMax = hunger.Text:match("(%d+)%/(%d+)")
                         local TMin, TMax = thirst.Text:match("(%d+)%/(%d+)")
 
-                        HMin = tonumber(HMin) or 0
-                        HMax = tonumber(HMax) or 0
-                        TMin = tonumber(TMin) or 0
-                        TMax = tonumber(TMax) or 0
+                        HMin = tonumber(HMin) 
+                        HMax = tonumber(HMax) 
+                        TMin = tonumber(TMin) 
+                        TMax = tonumber(TMax) 
 
                         -- Diet logic
                         if Diet == "Herbivore" or Diet == "Omnivore" then
@@ -156,11 +155,11 @@ do
                         if not ContainerGui.Visible and dietLabel then
 
                             -- HUNGER
-                            if HMin < HMax and IsIdle() then
+                            if HMin <= HMax and IsIdle() then
                                 Var.Root:SetAttribute("State", "Eating")
 
                             -- THIRST
-                            elseif TMin < TMax and IsIdle() then
+                            elseif TMin <= TMax and IsIdle() then
                                 if Water then
                                     Var.Root:SetAttribute("State", "Drinking")
 
