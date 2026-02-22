@@ -1,31 +1,43 @@
 repeat
     task.wait()
 until game:IsLoaded()
+
 local player = game.Players.LocalPlayer
 
+--// Character Handling
 local function GetCharacter()
     return player.Character or player.CharacterAdded:Wait()
 end
 
 local function GetRoot()
-    return GetCharacter():WaitForChild("HumanoidRootPart")
+    local char = GetCharacter()
+    return char:WaitForChild("HumanoidRootPart")
 end
 
+--// Vars
 local Var = {
-    Char = game.Players.LocalPlayer.Character,
+    Char = GetCharacter(),
     Root = GetRoot(),
-    Food = workspace.Interactions.Food,
-    Lake = workspace.Interactions.Lakes
+    Food = workspace:WaitForChild("Interactions"):WaitForChild("Food"),
+    Lake = workspace:WaitForChild("Interactions"):WaitForChild("Lakes")
 }
 
+-- Update character on respawn
+player.CharacterAdded:Connect(function()
+    Var.Char = GetCharacter()
+    Var.Root = GetRoot()
+end)
+
+--// Default State
 if Var.Root:GetAttribute("State") == nil then
     Var.Root:SetAttribute("State", "Idle")
 end
 
 local function IsIdle()
-    return Var.Root:GetAttribute("State") == "Idle"
+    return Var.Root and Var.Root:GetAttribute("State") == "Idle"
 end
 
+--// Remotes (kept for future use)
 local Re = {
     Food = game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Food"),
     Drink = game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("DrinkRemote")
@@ -34,131 +46,143 @@ local Re = {
 local function Dist(a, b)
     return (a - b).Magnitude
 end
-do
 
+--// UI
+do
     local WindUI = loadstring(game:HttpGet("https://github.com/Footagesus/WindUI/releases/latest/download/main.lua"))()
 
     local Window = WindUI:CreateWindow({
-        Title = "Shroom Grinder v1",
-        Icon = "door-open" -- lucide icon. optional
+        Title = "Shroom Grinder v1111",
+        Icon = "door-open"
     })
+
     local Section = Window:Section({
         Title = "Main",
         Icon = "chart-bar",
         Opened = true
     })
+
     local Tab1 = Section:Tab({
         Title = "Farm",
-        Icon = "hamburger", -- optional
+        Icon = "hamburger",
         Locked = false
     })
 
-    do
+    _G.TG = false
+    local Diet = nil
+    local Carcass, Berry, Water = false, false, false
 
-        _G.TG = false
-        local Diet = nil
-        local Carcass, Berry, Water = false, false, false
+    -- Wait for GUI safely
+    local PlayerGui = player:WaitForChild("PlayerGui")
+    local CreatureGui = PlayerGui:WaitForChild("CreatureInfoGui")
+    local ContainerFrame = CreatureGui:WaitForChild("ContainerFrame")
 
-        local thirst = game:GetService("Players").LocalPlayer.PlayerGui.CreatureInfoGui.ContainerFrame.TabFrames
-                           .MyCreature.StatsFrame.VitalityFrame.Thirst.AmountLabel
-        local hunger = game:GetService("Players").LocalPlayer.PlayerGui.CreatureInfoGui.ContainerFrame.TabFrames
-                           .MyCreature.StatsFrame.VitalityFrame.Hunger.AmountLabel
-        local dietLabel = game:GetService("Players").LocalPlayer.PlayerGui.CreatureInfoGui.ContainerFrame.TabFrames
-                              .MyCreature.DietLabel
-        local ContainerGui = game:GetService("Players").LocalPlayer.PlayerGui.SaveSelectionGui.ContainerFrame
+    local thirst = ContainerFrame.TabFrames.MyCreature.StatsFrame.VitalityFrame.Thirst.AmountLabel
+    local hunger = ContainerFrame.TabFrames.MyCreature.StatsFrame.VitalityFrame.Hunger.AmountLabel
+    local dietLabel = ContainerFrame.TabFrames.MyCreature.DietLabel
+    local ContainerGui = PlayerGui:WaitForChild("SaveSelectionGui").ContainerFrame
 
-        local Section = Tab1:Section({
-            Title = "Settings",
-            Box = true,
-            TextTransparency = 0.05,
-            TextXAlignment = "Center",
-            TextSize = 17,
-            Opened = true
-        })
+    Tab1:Section({
+        Title = "Settings",
+        Box = true,
+        TextTransparency = 0.05,
+        TextXAlignment = "Center",
+        TextSize = 17,
+        Opened = true
+    })
 
-        local Toggle = Tab1:Toggle({
-            Title = "Start",
-            Desc = "Start AFK",
-            Icon = "bird",
-            Type = "Checkbox",
-            Value = false,
-            Callback = function(state)
-                _G.TG = state
-                if not _G.TG then
-                    if workspace:FindFirstChild(".") then
-                        workspace["."]:Destroy()
-                    end
-                    return
+    Tab1:Toggle({
+        Title = "Start",
+        Desc = "Start AFK",
+        Icon = "bird",
+        Type = "Checkbox",
+        Value = false,
+
+        Callback = function(state)
+            _G.TG = state
+
+            -- STOP
+            if not _G.TG then
+                if workspace:FindFirstChild(".") then
+                    workspace["."]:Destroy()
                 end
-                if _G.TG then
-                    Diet = tostring(dietLabel.Text)
+                return
+            end
 
-                    local safePart = instance.new("Part")
-                    safePart.Size = Vector3.new(200, 1, 200)
-                    safePart.Transparency = 0.7
-                    safePart.Achored = true
-                    safePart.Parent = workspace
-                    safePart.CFrame = CFrame.new(0, 1500, 0)
-                    safePart.Name = "."
+            -- START
+            Diet = tostring(dietLabel.Text)
 
-                    task.spawn(function()
-                        while _G.TG do
-                          
-                                local HMin, HMax = hunger.Text:match('(%d+)%/(%d+)')
-                                HMin = tonumber(HMin)
-                                HMax = tonumber(HMax)
+            -- Prevent duplicate safe parts
+            if workspace:FindFirstChild(".") then
+                workspace["."]:Destroy()
+            end
 
-                                local TMin, TMax = thirst.Text:match('(%d+)%/(%d+)')
-                                TMin = tonumber(TMin)
-                                TMax = tonumber(TMax)
+            local safePart = Instance.new("Part")
+            safePart.Size = Vector3.new(200, 1, 200)
+            safePart.Transparency = 0.7
+            safePart.Anchored = true
+            safePart.CanCollide = true
+            safePart.Name = "."
+            safePart.CFrame = CFrame.new(0, 1500, 0)
+            safePart.Parent = workspace
 
-                                if Diet == 'Herbivore' or Diet == 'Omnivore' then
-                                    Carcass, Berry, Water = false, true, true
-                                elseif Diet == 'Carnivore' then
-                                    Carcass, Berry, Water = true, false, true
-                                elseif Diet == 'Photocarnivore' then
-                                    Carcass, Berry, Water = true, false, false
-                                elseif Diet == 'Photovore' then
-                                    Carcass, Berry, Water = false, false, true
-                                end
+            task.spawn(function()
+                while _G.TG do
+                    pcall(function()
 
-                                if not ContainerGui.Visible and dietLabel then
+                        -- Refresh root in case of respawn
+                        Var.Root = GetRoot()
 
-                                    if HMin < HMax and IsIdle() then
-                                        Var.Root:SetAttribute("State", 'Eating')
+                        -- Safe stat parsing
+                        local HMin, HMax = hunger.Text:match("(%d+)%/(%d+)")
+                        local TMin, TMax = thirst.Text:match("(%d+)%/(%d+)")
 
-                                    elseif TMin < TMax and IsIdle() then
-                                        if Water then
-                                            Var.Root:SetAttribute("State", 'Drinking')
+                        HMin = tonumber(HMin) or 0
+                        HMax = tonumber(HMax) or 0
+                        TMin = tonumber(TMin) or 0
+                        TMax = tonumber(TMax) or 0
 
-                                            Var.Root.CFrame = safePart.CFrame * CFrame.new(0, -1500, 0)
-                                            for i, v in pairs(Var.Lake:GetChildren()) do
-                                                if v:IsA("Model") and v.Name == 'Lake' then
+                        -- Diet logic
+                        if Diet == "Herbivore" or Diet == "Omnivore" then
+                            Carcass, Berry, Water = false, true, true
+                        elseif Diet == "Carnivore" then
+                            Carcass, Berry, Water = true, false, true
+                        elseif Diet == "Photocarnivore" then
+                            Carcass, Berry, Water = true, false, false
+                        elseif Diet == "Photovore" then
+                            Carcass, Berry, Water = false, false, true
+                        end
 
-                                                    Var.Root.CFrame = v:GetPivot().CFrame
+                        if not ContainerGui.Visible and dietLabel then
 
-                                                    local args =
-                                                        {workspace:WaitForChild("Interactions"):WaitForChild("Lakes")
-                                                            :WaitForChild(v)}
-                                                    Re.Drink:FireServer(unpack(args))
-                                                end
-                                            end
+                            -- HUNGER
+                            if HMin < HMax and IsIdle() then
+                                Var.Root:SetAttribute("State", "Eating")
+
+                            -- THIRST
+                            elseif TMin < TMax and IsIdle() then
+                                if Water then
+                                    Var.Root:SetAttribute("State", "Drinking")
+
+                                    for _, v in pairs(Var.Lake:GetChildren()) do
+                                        if v:IsA("Model") and v.Name == "Lake" then
+                                            Var.Root.CFrame = v:GetPivot()
+
+                                            Re.Drink:FireServer(v)
+                                            break
                                         end
-                                    else
-                                        Var.Root:SetAttribute("State", 'Idle')
-                                        Var.Root.CFrame = safePart.CFrame * CFrame.new(0, 5, 0)
                                     end
-
                                 end
-
-                                task.wait()
-                          
+                            else
+                                Var.Root:SetAttribute("State", "Idle")
+                                Var.Root.CFrame = safePart.CFrame * CFrame.new(0, 5, 0)
+                            end
                         end
                     end)
 
+                    task.wait(0.2)
                 end
-            end
-
-        })
-    end
+            end)
+        end
+    })
 end
