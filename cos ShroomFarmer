@@ -1,0 +1,147 @@
+repeat
+    task.wait()
+until game:IsLoaded()
+
+do
+
+    local Var = {
+        Char = game.Players.LocalPlayer.Character,
+        Hum = game.Players.LocalPlayer.Character.HumanoidRootPart,
+        Food = workspace.Interactions.Food,
+        Lake = workspace.Interactions.Lakes
+    }
+
+    if Var.Hum:GetAttribute("State") == nil then
+        Var.Hum:SetAttribute("State", "Idle")
+    end
+
+   
+    local function IsIdle()
+        return Var.Hum:GetAttribute("State") == "Idle"
+    end
+
+    local Re = {
+        Food = game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Food"),
+        Drink = game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("DrinkRemote")
+    }
+
+    local function Dist(a, b)
+        return (a - b).Magnitude
+    end
+
+    local WindUI = loadstring(game:HttpGet("https://github.com/Footagesus/WindUI/releases/latest/download/main.lua"))()
+
+    local Window = WindUI:CreateWindow({
+        Title = "Shroom Grinder",
+        Icon = "door-open" -- lucide icon. optional
+    })
+    local Section = Window:Section({
+        Title = "Main",
+        Icon = "chart-bar",
+        Opened = true
+    })
+    local Tab1 = Section:Tab({
+        Title = "Farm",
+        Icon = "hamburger", -- optional
+        Locked = false
+    })
+
+    do
+
+        local TG = false
+        local Diet = nil
+        local Carcass, Berry, Water = false, false, false
+
+        local thirst = game:GetService("Players").LocalPlayer.PlayerGui.CreatureInfoGui.ContainerFrame.TabFrames
+                           .MyCreature.StatsFrame.VitalityFrame.Thirst.AmountLabel
+        local hunger = game:GetService("Players").LocalPlayer.PlayerGui.CreatureInfoGui.ContainerFrame.TabFrames
+                           .MyCreature.StatsFrame.VitalityFrame.Hunger.AmountLabel
+        local dietLabel = game:GetService("Players").LocalPlayer.PlayerGui.CreatureInfoGui.ContainerFrame.TabFrames
+                              .MyCreature.DietLabel
+        local ContainerGui = game:GetService("Players").LocalPlayer.PlayerGui.SaveSelectionGui.ContainerFrame
+
+        local Section = Tab1:Section({
+            Title = "Settings",
+            Box = true,
+            TextTransparency = 0.05,
+            TextXAlignment = "Center",
+            TextSize = 17,
+            Opened = true
+        })
+
+        local Toggle = Tab1:Toggle({
+            Title = "Start",
+            Desc = "Start AFK",
+            Icon = "bird",
+            Type = "Checkbox",
+            Value = false,
+            Callback = function(state)
+                TG = Value
+                if not TG then
+                    if workspace:WaitForChild(".") then
+                        workspace:WaitForChild("."):Destroy()
+                    end
+                end
+                if TG then
+                   Diet = tostring(dietLabel.Text ) 
+
+                    local safePart = instance.new("Part")
+                    safePart.Size = Vector3.new(200, 1, 200)
+                    safePart.Transparency = 0.7
+                    safePart.Achored = true
+                    safePart.Parent = workspace
+                    safePart.CFrame = CFrame.new(0, 1500, 0)
+                    safePart.Name = "."
+
+                    while TG do
+                        local HMin, HMax = hunger.Text:match('(%d+)%/(%d+)')
+                        local TMin, TMax = thirst.Text:match('(%d+)%/(%d+)')
+
+                           if Diet == 'Herbivore' or Diet == 'Omnivore' then
+                                Carcass, Berry, Water = false, true, true
+                            elseif Diet == 'Carnivore' then
+                                Carcass, Berry, Water = true, false, true
+                            elseif Diet == 'Photocarnivore' then
+                                Carcass, Berry, Water = true, false, false
+                            elseif Diet == 'Photovore' then
+                                Carcass, Berry, Water = false, false, true
+                            end
+
+
+                        if not ContainerGui.Visible and dietLabel then
+
+                            if HMin < HMax and IsIdle() then
+                                Var.Hum:SetAttribute("State",'Eating')
+
+                            elseif TMin < TMax and IsIdle() then
+                                if Water then
+                                 Var.Hum:SetAttribute("State",'Drinking')
+
+                                    Var.Hum.CFrame = safePart.CFrame * CFrame.new(0, -1500, 0)
+                                    for i, v in pairs(Var.Lake:GetChildren()) do
+                                        if v:IsA("Model") and v.Name == 'Lake' then
+
+                                            Var.Hum.CFrame = v:GetPivot().CFrame
+
+                                            local args = {workspace:WaitForChild("Interactions"):WaitForChild("Lakes")
+                                                :WaitForChild(v)}
+                                            game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild(
+                                                "DrinkRemote"):FireServer(unpack(args))
+                                        end
+                                    end
+                                end
+                            else
+                                Var.Hum:SetAttribute("State",'Idle')
+                                Var.Hum.CFrame = safePart.CFrame * CFrame.new(0, 5, 0)
+                            end
+                         
+
+                        end
+
+                        task.wait()
+                    end
+                end
+            end
+        })
+    end
+end
