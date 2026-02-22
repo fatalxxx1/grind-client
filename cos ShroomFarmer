@@ -52,7 +52,7 @@ do
     local WindUI = loadstring(game:HttpGet("https://github.com/Footagesus/WindUI/releases/latest/download/main.lua"))()
 
     local Window = WindUI:CreateWindow({
-        Title = "Shroom Grinder",
+        Title = "Shroom IEIE",
         Icon = "door-open"
     })
 
@@ -98,8 +98,8 @@ do
         Type = "Checkbox",
         Value = false,
 
-        Callback = function(state)
-            _G.TG = state
+        Callback = function(Value)
+            _G.TG = Value
 
             -- STOP
             if not _G.TG then
@@ -124,9 +124,9 @@ do
 
             task.spawn(function()
                 while _G.TG do
-                    pcall(function()
+                   
                         Diet = tostring(dietLabel.Text)
-                        -- Refresh root in case of respawn
+                        
                         Var.Root = GetRoot()
 
                         -- Safe stat parsing
@@ -176,7 +176,7 @@ do
                                 Var.Root.CFrame = safePart.CFrame * CFrame.new(0, 10, 0)
                             end
                         end
-                    end)
+                   
 
                     task.wait(0.2)
                 end
