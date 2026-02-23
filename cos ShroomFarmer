@@ -48,7 +48,7 @@ do
     local WindUI = loadstring(game:HttpGet("https://github.com/Footagesus/WindUI/releases/latest/download/main.lua"))()
 
     local Window = WindUI:CreateWindow({
-        Title = "Shroom Grinder v1",
+        Title = "Shroom Grinder v0.1",
         Icon = "door-open"
     })
     Window:Divider()
@@ -125,7 +125,7 @@ do
     Tab1:Toggle({
         Title = "Start",
         Desc = "Start AFK",
-        Icon = "bird",
+        Icon = "",
         Type = "Checkbox",
         Value = false,
 
@@ -154,10 +154,9 @@ do
 
             task.spawn(function()
                 while _G.TG do
-                   
-
-                        local Hunger_percent = hungerL.Text:match('(%d+)%%')
-                        local Thirst_percent = thirstL.Text:match('(%d+)%%')
+                 
+                        local Hunger_percent = tonumber(hungerL.Text:match('(%d+)%%'))
+                        local Thirst_percent = tonumber(thirstL.Text:match('(%d+)%%'))
                         print("Thirst:" .. Thirst_percent)
                         print("Hunger:" .. Hunger_percent)
 
@@ -181,10 +180,10 @@ do
 
                                                 local args =
                                                     {workspace:WaitForChild("Interactions"):WaitForChild("Lakes")
-                                                        :WaitForChild(v)}
+                                                        :WaitForChild(v.Name)}
                                                 Re.Drink:FireServer(unpack(args))
 
-                                            until Thirst_percent >= 100
+                                            until Thirst_percent >= 100 or not _G.TG
                                         end
                                     end
                                 end
@@ -207,19 +206,12 @@ do
 
                                                 local args =
                                                     {workspace:WaitForChild("Interactions"):WaitForChild("FoodNodes")
-                                                        :WaitForChild(v)}
+                                                        :WaitForChild(v.Name)}
 
                                                 Re.Food:FireServer(unpack(args))
 
-                                            until Hunger_percent >= 100
+                                            until Hunger_percent >= 100 or not _G.TG
                                         end
-                                    else
-                                        WindUI:Notify({
-                                            Title = "Status",
-                                            Content = "Invalid Food :<",
-                                            Duration = 1.5,
-                                            Icon = "hamburger"
-                                        })
                                     end
                                 end
                             else
