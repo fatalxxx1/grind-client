@@ -48,7 +48,7 @@ do
     local WindUI = loadstring(game:HttpGet("https://github.com/Footagesus/WindUI/releases/latest/download/main.lua"))()
 
     local Window = WindUI:CreateWindow({
-        Title = "Shroom Grinder v0.2",
+        Title = "Shroom Grinder v0.3",
         Icon = "door-open"
     })
     Window:Divider()
@@ -172,8 +172,9 @@ do
                             for i, v in pairs(Var.Lake:GetChildren()) do
                                 if v:IsA('Model') and v.Name == 'Lake' then
                                     if Dist(Var.Root.Position, v.Name:GetPivot().Position) < 1000 then
+                                        local vname = v.Name
                                         repeat
-                                            Var.Root.CFrame = v.Name:GetPivot().CFrame
+                                            Var.Root.CFrame = vname:GetPivot().CFrame
 
                                             task.wait()
 
@@ -198,12 +199,12 @@ do
                                 if v:IsA('Model') and v.Name == _G.Food then
                                     if Dist(Var.Root.Position, v.Name:GetPivot().Position) < 1000 then
                                         repeat
-                                            Var.Root.CFrame = v.Name:GetPivot().CFrame
+                                            Var.Root.CFrame = v.CFrame
 
                                             task.wait()
 
                                             local args = {workspace:WaitForChild("Interactions"):WaitForChild(
-                                                "FoodNodes"):WaitForChild(v.Name)}
+                                                "Food"):WaitForChild(v.Name)}
 
                                             Re.Food:FireServer(unpack(args))
 
