@@ -48,7 +48,7 @@ do
     local WindUI = loadstring(game:HttpGet("https://github.com/Footagesus/WindUI/releases/latest/download/main.lua"))()
 
     local Window = WindUI:CreateWindow({
-        Title = "Shroom Grinder v0.1",
+        Title = "Shroom Grinder v0.2",
         Icon = "door-open"
     })
     Window:Divider()
@@ -154,74 +154,69 @@ do
 
             task.spawn(function()
                 while _G.TG do
-                 
-                        local Hunger_percent = tonumber(hungerL.Text:match('(%d+)%%'))
-                        local Thirst_percent = tonumber(thirstL.Text:match('(%d+)%%'))
-                        print("Thirst:" .. Thirst_percent)
-                        print("Hunger:" .. Hunger_percent)
 
-                        if PcGui.Visible or mobileGUi.Visible then
+                    local Hunger_percent = tonumber(hungerL.Text:match('(%d+)%%'))
+                    local Thirst_percent = tonumber(thirstL.Text:match('(%d+)%%'))
+                    print("Thirst:" .. Thirst_percent)
+                    print("Hunger:" .. Hunger_percent)
 
-                            if Thirst_percent < 100 and IsIdle() then
-                                Var.Root:SetAttribute("State", "Drinking")
-                                WindUI:Notify({
-                                    Title = "Status",
-                                    Content = "Now is Drinking",
-                                    Duration = 1.5,
-                                    Icon = "glass-water"
-                                })
-                                for i, v in pairs(Var.Lake:GetChildren()) do
-                                    if v:IsA('Model') and v.Name == 'Lake' then
-                                        if Dist(Var.Root.Position, v:GetPivot().Position) < 1000 then
-                                            repeat
-                                                Var.Root.CFrame = v:GetPivot().CFrame
+                    if PcGui.Visible or mobileGUi.Visible then
+                        if Thirst_percent < 100 and IsIdle() then
+                            Var.Root:SetAttribute("State", "Drinking")
+                            WindUI:Notify({
+                                Title = "Status",
+                                Content = "Now is Drinking",
+                                Duration = 1.5,
+                                Icon = "glass-water"
+                            })
+                            for i, v in pairs(Var.Lake:GetChildren()) do
+                                if v:IsA('Model') and v.Name == 'Lake' then
+                                    if Dist(Var.Root.Position, v.Name:GetPivot().Position) < 1000 then
+                                        repeat
+                                            Var.Root.CFrame = v.Name:GetPivot().CFrame
 
-                                                task.wait()
+                                            task.wait()
 
-                                                local args =
-                                                    {workspace:WaitForChild("Interactions"):WaitForChild("Lakes")
-                                                        :WaitForChild(v.Name)}
-                                                Re.Drink:FireServer(unpack(args))
+                                            local args = {workspace:WaitForChild("Interactions"):WaitForChild("Lakes")
+                                                :WaitForChild(v.Name)}
+                                            Re.Drink:FireServer(unpack(args))
 
-                                            until Thirst_percent >= 100 or not _G.TG
-                                        end
+                                        until Thirst_percent >= 100 or not _G.TG
                                     end
                                 end
-                            elseif Hunger_percent < 100 and IsIdle() then
-                                -- SOME THING LIKE EATING OR WHATEVER
-                                Var.Root:SetAttribute("State", "Eating")
-                                WindUI:Notify({
-                                    Title = "Status",
-                                    Content = "Now is Eating",
-                                    Duration = 1.5,
-                                    Icon = "hamburger"
-                                })
-                                for i, v in pairs(Var.FoodNode:GetChildren()) do
-                                    if v:IsA('Model') and v.Name == _G.Food then
-                                        if Dist(Var.Root.Position, v:GetPivot().Position) < 1000 then
-                                            repeat
-                                                Var.Root.CFrame = v:GetPivot().CFrame
-
-                                                task.wait()
-
-                                                local args =
-                                                    {workspace:WaitForChild("Interactions"):WaitForChild("FoodNodes")
-                                                        :WaitForChild(v.Name)}
-
-                                                Re.Food:FireServer(unpack(args))
-
-                                            until Hunger_percent >= 100 or not _G.TG
-                                        end
-                                    end
-                                end
-                            else
-                                Var.Root:SetAttribute("State", "Idle")
-                                Var.Root.CFrame = safePart.CFrame * CFrame.new(0, 10, 0)
                             end
+                        elseif Hunger_percent < 100 and IsIdle() then
+                            -- SOME THING LIKE EATING OR WHATEVER
+                            Var.Root:SetAttribute("State", "Eating")
+                            WindUI:Notify({
+                                Title = "Status",
+                                Content = "Now is Eating",
+                                Duration = 1.5,
+                                Icon = "hamburger"
+                            })
+                            for i, v in pairs(Var.FoodNode:GetChildren()) do
+                                if v:IsA('Model') and v.Name == _G.Food then
+                                    if Dist(Var.Root.Position, v.Name:GetPivot().Position) < 1000 then
+                                        repeat
+                                            Var.Root.CFrame = v.Name:GetPivot().CFrame
 
+                                            task.wait()
+
+                                            local args = {workspace:WaitForChild("Interactions"):WaitForChild(
+                                                "FoodNodes"):WaitForChild(v.Name)}
+
+                                            Re.Food:FireServer(unpack(args))
+
+                                        until Hunger_percent >= 100 or not _G.TG
+                                    end
+                                end
+                            end
+                        else
+                            Var.Root:SetAttribute("State", "Idle")
+                            Var.Root.CFrame = safePart.CFrame * CFrame.new(0, 10, 0)
                         end
 
-              
+                    end
 
                     task.wait(0.2)
                 end
