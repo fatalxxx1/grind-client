@@ -48,7 +48,7 @@ do
     local WindUI = loadstring(game:HttpGet("https://github.com/Footagesus/WindUI/releases/latest/download/main.lua"))()
 
     local Window = WindUI:CreateWindow({
-        Title = "Shroom Skid",
+        Title = "Shroom Grinder v1",
         Icon = "door-open"
     })
     Window:Divider()
@@ -154,7 +154,7 @@ do
 
             task.spawn(function()
                 while _G.TG do
-                    pcall(function()
+                   
 
                         local Hunger_percent = hungerL.Text:match('(%d+)%%')
                         local Thirst_percent = thirstL.Text:match('(%d+)%%')
@@ -229,7 +229,7 @@ do
 
                         end
 
-                    end)
+              
 
                     task.wait(0.2)
                 end
