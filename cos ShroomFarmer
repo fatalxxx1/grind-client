@@ -4,7 +4,6 @@ until game:IsLoaded()
 
 local player = game.Players.LocalPlayer
 
-
 local function GetCharacter()
     return player.Character or player.CharacterAdded:Wait()
 end
@@ -18,10 +17,9 @@ end
 local Var = {
     Char = GetCharacter(),
     Root = GetRoot(),
-    Food = workspace:WaitForChild("Interactions"):WaitForChild("Food"),
+    FoodNode = workspace:WaitForChild("Interactions"):WaitForChild("FoodNodes"),
     Lake = workspace:WaitForChild("Interactions"):WaitForChild("Lakes")
 }
-
 
 player.CharacterAdded:Connect(function()
     Var.Char = GetCharacter()
@@ -37,7 +35,6 @@ local function IsIdle()
     return Var.Root and Var.Root:GetAttribute("State") == "Idle"
 end
 
-
 local Re = {
     Food = game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Food"),
     Drink = game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("DrinkRemote")
@@ -47,19 +44,37 @@ local function Dist(a, b)
     return (a - b).Magnitude
 end
 
-
 do
     local WindUI = loadstring(game:HttpGet("https://github.com/Footagesus/WindUI/releases/latest/download/main.lua"))()
 
     local Window = WindUI:CreateWindow({
-        Title = "Shroom IEIE",
+        Title = "Shroom Skid",
         Icon = "door-open"
     })
+    Window:Divider()
 
     local Section = Window:Section({
         Title = "Main",
         Icon = "chart-bar",
         Opened = true
+    })
+
+    local info1 = Section:Tab({
+        Title = "Info",
+        Icon = "badge-info",
+        Locked = false
+    })
+
+    local Paragraph1 = info1:Paragraph({
+        Title = "Warning",
+        Desc = "all of farm functions is blatant. \n use at your own RISK",
+        Color = "Red",
+        Image = "",
+        ImageSize = 30,
+        Thumbnail = "",
+        ThumbnailSize = 80,
+        Locked = false
+
     })
 
     local Tab1 = Section:Tab({
@@ -69,26 +84,42 @@ do
     })
 
     _G.TG = false
+    _G.Food = nil
+
     local Diet = nil
     local Carcass, Berry, Water = false, false, false
 
-   
     local PlayerGui = player:WaitForChild("PlayerGui")
     local CreatureGui = PlayerGui:WaitForChild("CreatureInfoGui")
-    local ContainerFrame = CreatureGui:WaitForChild("ContainerFrame")
+    local mobileGUi = game:GetService("Players").LocalPlayer.PlayerGui.HUDGui.BottomFrame.Mobile
+    local PcGui = game:GetService("Players").LocalPlayer.PlayerGui.HUDGui.BottomFrame.Other
 
-    local thirst = ContainerFrame.TabFrames.MyCreature.StatsFrame.VitalityFrame.Thirst.AmountLabel
-    local hunger = ContainerFrame.TabFrames.MyCreature.StatsFrame.VitalityFrame.Hunger.AmountLabel
-    local dietLabel = ContainerFrame.TabFrames.MyCreature.DietLabel
-    local ContainerGui = PlayerGui:WaitForChild("SaveSelectionGui").ContainerFrame
+    local thirstL = game:GetService("Players").LocalPlayer.PlayerGui.HUDGui.BottomFrame.Other.Thirst.HoverLabel
+    local hungerL = game:GetService("Players").LocalPlayer.PlayerGui.HUDGui.BottomFrame.Other.Hunger.HoverLabel
 
     Tab1:Section({
-        Title = tostring(Diet),
+        Title = 'Settings',
         Box = true,
         TextTransparency = 0.05,
         TextXAlignment = "Center",
         TextSize = 17,
         Opened = true
+    })
+
+    local FoodD = Tab1:Dropdown({
+        Title = "Food",
+        Desc = "Select Food",
+        Values = {"Grass", "Carcass"},
+        Value = "",
+        Callback = function(option)
+            _G.Food = option
+            WindUI:Notify({
+                Title = "Food",
+                Content = 'You Selected ' .. _G.Food,
+                Duration = 1,
+                Icon = "hamburger"
+            })
+        end
     })
 
     Tab1:Toggle({
@@ -109,7 +140,6 @@ do
                 return
             end
 
-            -- Prevent duplicate safe parts
             if workspace:FindFirstChild(".") then
                 workspace["."]:Destroy()
             end
@@ -124,59 +154,82 @@ do
 
             task.spawn(function()
                 while _G.TG do
-                   
-                        Diet = tostring(dietLabel.Text)
-                        
-                        Var.Root = GetRoot()
+                    pcall(function()
 
-                        -- Safe stat parsing
-                        local HMin, HMax = hunger.Text:match("(%d+)%/(%d+)")
-                        local TMin, TMax = thirst.Text:match("(%d+)%/(%d+)")
+                        local Hunger_percent = hungerL.Text:match('(%d+)%%')
+                        local Thirst_percent = thirstL.Text:match('(%d+)%%')
+                        print("Thirst:" .. Thirst_percent)
+                        print("Hunger:" .. Hunger_percent)
 
-                        HMin = tonumber(HMin)
-                        HMax = tonumber(HMax)
-                        TMin = tonumber(TMin)
-                        TMax = tonumber(TMax)
+                        if PcGui.Visible or mobileGUi.Visible then
 
-                        -- Diet logic
-                        if Diet == "Herbivore" or Diet == "Omnivore" then
-                            Carcass, Berry, Water = false, true, true
-                        elseif Diet == "Carnivore" then
-                            Carcass, Berry, Water = true, false, true
-                        elseif Diet == "Photocarnivore" then
-                            Carcass, Berry, Water = true, false, false
-                        elseif Diet == "Photovore" then
-                            Carcass, Berry, Water = false, false, true
-                        end
+                            if Thirst_percent < 100 and IsIdle() then
+                                Var.Root:SetAttribute("State", "Drinking")
+                                WindUI:Notify({
+                                    Title = "Status",
+                                    Content = "Now is Drinking",
+                                    Duration = 1.5,
+                                    Icon = "glass-water"
+                                })
+                                for i, v in pairs(Var.Lake:GetChildren()) do
+                                    if v:IsA('Model') and v.Name == 'Lake' then
+                                        if Dist(Var.Root.Position, v:GetPivot().Position) < 1000 then
+                                            repeat
+                                                Var.Root.CFrame = v:GetPivot().CFrame
 
-                        if  ContainerGui.Visible == false and dietLabel then
+                                                task.wait()
 
-                            -- HUNGER
-                            if HMin <= HMax and IsIdle() then
-                                if Carcass or Berry then
-                                    Var.Root:SetAttribute("State", "Eating")
-                                end
+                                                local args =
+                                                    {workspace:WaitForChild("Interactions"):WaitForChild("Lakes")
+                                                        :WaitForChild(v)}
+                                                Re.Drink:FireServer(unpack(args))
 
-                                -- THIRST
-                            elseif TMin <= TMax and IsIdle() then
-                                if Water then
-                                    Var.Root:SetAttribute("State", "Drinking")
-
-                                    for _, v in pairs(Var.Lake:GetChildren()) do
-                                        if v:IsA("Model") and v.Name == "Lake" then
-                                            Var.Root.CFrame = v:GetPivot()
-
-                                            Re.Drink:FireServer(v)
-                                            break
+                                            until Thirst_percent >= 100
                                         end
+                                    end
+                                end
+                            elseif Hunger_percent < 100 and IsIdle() then
+                                -- SOME THING LIKE EATING OR WHATEVER
+                                Var.Root:SetAttribute("State", "Eating")
+                                WindUI:Notify({
+                                    Title = "Status",
+                                    Content = "Now is Eating",
+                                    Duration = 1.5,
+                                    Icon = "hamburger"
+                                })
+                                for i, v in pairs(Var.FoodNode:GetChildren()) do
+                                    if v:IsA('Model') and v.Name == _G.Food then
+                                        if Dist(Var.Root.Position, v:GetPivot().Position) < 1000 then
+                                            repeat
+                                                Var.Root.CFrame = v:GetPivot().CFrame
+
+                                                task.wait()
+
+                                                local args =
+                                                    {workspace:WaitForChild("Interactions"):WaitForChild("FoodNodes")
+                                                        :WaitForChild(v)}
+
+                                                Re.Food:FireServer(unpack(args))
+
+                                            until Hunger_percent >= 100
+                                        end
+                                    else
+                                        WindUI:Notify({
+                                            Title = "Status",
+                                            Content = "Invalid Food :<",
+                                            Duration = 1.5,
+                                            Icon = "hamburger"
+                                        })
                                     end
                                 end
                             else
                                 Var.Root:SetAttribute("State", "Idle")
                                 Var.Root.CFrame = safePart.CFrame * CFrame.new(0, 10, 0)
                             end
+
                         end
-                   
+
+                    end)
 
                     task.wait(0.2)
                 end
