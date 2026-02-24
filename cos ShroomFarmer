@@ -35,6 +35,220 @@ local function IsIdle()
     return Var.Root and Var.Root:GetAttribute("State") == "Idle"
 end
 
+IsIdle()
+local Re = {
+    Food = game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Food"),
+    Drink = game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("DrinkRemote")
+}
+
+local function Dist(a, b)
+    return (a - b).Magnitude
+end
+
+do
+    local WindUI = loadstring(game:HttpGet("https://github.com/Footagesus/WindUI/releases/latest/download/main.lua"))()
+
+    local Window = WindUI:CreateWindow({
+        Title = "Shroom Grinder v0.3",
+        Icon = "door-open"
+    })
+    Window:Divider()
+
+    local Section = Window:Section({
+        Title = "Main",
+        Icon = "chart-bar",
+        Opened = true
+    })
+
+    local info1 = Section:Tab({
+        Title = "Info",
+        Icon = "badge-info",
+        Locked = false
+    })
+info1:Select() -- Select Tab
+    local Paragraph1 = info1:Paragraph({
+        Title = "Warning",
+        Desc = "all of farm functions is blatant. \n use at your own RISK",
+        Color = "Red",
+        Image = "",
+        ImageSize = 30,
+        Thumbnail = "",
+        ThumbnailSize = 80,
+        Locked = false
+
+    })
+info1:Divider()
+    local Tab1 = Section:Tab({
+        Title = "Farm",
+        Icon = "hamburger",
+        Locked = false
+    })
+
+    _G.TG = false
+    _G.Food = nil
+   _G.Delay = 5
+    _G.MM = 100
+    
+    local Diet = nil
+    local Carcass, Berry, Water = false, false, false
+
+    local PlayerGui = player:WaitForChild("PlayerGui")
+    local CreatureGui = PlayerGui:WaitForChild("CreatureInfoGui")
+    local mobileGUi = game:GetService("Players").LocalPlayer.PlayerGui.HUDGui.BottomFrame.Mobile
+    local PcGui = game:GetService("Players").LocalPlayer.PlayerGui.HUDGui.BottomFrame.Other
+
+    local thirstL = game:GetService("Players").LocalPlayer.PlayerGui.HUDGui.BottomFrame.Other.Thirst.HoverLabel
+    local hungerL = game:GetService("Players").LocalPlayer.PlayerGui.HUDGui.BottomFrame.Other.Hunger.HoverLabel
+
+    Tab1:Section({
+        Title = 'Settings',
+        Box = true,
+        TextTransparency = 0.05,
+        TextXAlignment = "Center",
+        TextSize = 17,
+        Opened = true
+    })
+     local DelayD = Tab1:Dropdown({
+    Title = "Tp Delay",
+    Desc = "Respond delay",
+    Values = { "1", "3", "5" },
+    Value = "5",
+    Callback = function(option)
+        _G.Delay = tonumber(option)
+    end
+})
+    Tab1:Divider()
+    local MAXH= Tab1:Slider({
+    Title = "HUNGER",
+    Desc = "tp when hunger = ?",
+    
+    -- To make float number supported, 
+    -- make the Step a float number.
+    -- example: Step = 0.1
+    Step = 10,
+    Value = {
+        Min = 20,
+        Max = 100,
+        Default = 100,
+    },
+    Callback = function(value)
+        _G.MM = value
+    end
+})
+    Tab1:Divider()
+    local FoodD = Tab1:Dropdown({
+        Title = "Food",
+        Desc = "Select Food",
+        Values = {"Grass", "Carcass"},
+        Value = "",
+        Callback = function(option)
+            _G.Food = option
+            WindUI:Notify({
+                Title = "Food",
+                Content = 'You Selected ' .. _G.Food,
+                Duration = 1,
+                Icon = "hamburger"
+            })
+        end
+    })
+Tab1:Divider()
+    Tab1:Toggle({
+        Title = "Start",
+        Desc = "Start AFK",
+        Icon = "",
+        Type = "Checkbox",
+        Value = false,
+
+        Callback = function(Value)
+            _G.TG = Value
+
+            -- STOP
+            if not _G.TG then
+
+                if workspace:FindFirstChild(".") then
+                    workspace["."]:Destroy()
+                end
+                return
+            end
+
+            if workspace:FindFirstChild(".") then
+                workspace["."]:Destroy()
+            end
+
+            local safePart = Instance.new("Part")
+            safePart.Size = Vector3.new(200, 5, 200)
+            safePart.Transparency = 0.5
+            safePart.Anchored = true
+            safePart.Name = "."
+            safePart.CFrame = CFrame.new(0, 1500, 0)
+            safePart.Parent = workspace
+
+            task.spawn(function()
+    while _G.TG do
+
+        local Hunger = tonumber(hungerL.Text:match("(%d+)%%")) or 100
+        local Thirst = tonumber(thirstL.Text:match("(%d+)%%")) or 100
+
+        if PcGui.Visible or mobileGUi.Visible then
+
+            -- ================= DRINK =================
+            if Thirst < 100 and IsIdle() then
+                task.wait(_G.Delay)
+                Var.Root:SetAttribute("State","Drinking")
+
+                local lake = Var.Lake:WaitForChild('Lake')
+
+                if lake then
+                    repeat
+                        Var.Root.CFrame = lake:GetPivot()
+                        task.wait(0.3)
+
+                        Re.Drink:FireServer(lake)
+
+                        Thirst = tonumber(thirstL.Text:match("(%d+)%%"))
+                    until Thirst >= 100 or not _G.TG
+                end
+
+                Var.Root:SetAttribute("State","Idle")
+               
+            end
+
+
+            -- ================= EAT =================
+            if Hunger < _G.MM and IsIdle() and _G.Food then
+                task.wait(_G.Delay)
+                Var.Root:SetAttribute("State","Eating")
+
+                local node = Var.FoodNode:WaitForChild(_G.Food)
+                local foodmodel = 	workspace:WaitForChild("Interactions"):WaitForChild("Food"):WaitForChild(_G.Food)
+
+                if node and foodmodel then
+                    repeat
+                        Var.Root.CFrame = node:GetPivot()*CFrame.new(0,10,0)
+                        task.wait(0.3)
+
+                        Re.Food:FireServer(foodmodel)
+
+                        Hunger = tonumber(hungerL.Text:match("(%d+)%%"))
+                    until Hunger >= 100 or not _G.TG
+                end
+
+                Var.Root:SetAttribute("State","Idle")
+            end
+
+        end
+        if IsIdle() then
+            task.wait(_G.Delay)
+Var.Root.CFrame = safePart.CFrame*CFrame.new(0,5,0)
+            
+
+end
+        task.wait()
+    end
+end)
+        end
+    })
+end
 local Re = {
     Food = game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Food"),
     Drink = game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("DrinkRemote")
