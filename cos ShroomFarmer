@@ -55,6 +55,21 @@ do
         Size = UDim2.fromOffset(1200, 1200)
     })
     Window:Divider()
+    Window:DisableTopbarButtons({
+        "Fullscreen",
+    })
+
+    Window:EditOpenButton({
+    CornerRadius = UDim.new(0,16),
+    StrokeThickness = 0,
+    Color = ColorSequence.new( -- gradient
+        Color3.fromHex("FF0F7B"), 
+        Color3.fromHex("F89B29")
+    ),
+    OnlyMobile = false,
+    Enabled = true,
+    Draggable = false,
+    })
 
     local Section = Window:Section({
         Title = "Main",
