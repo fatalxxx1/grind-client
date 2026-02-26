@@ -41,7 +41,7 @@ do
     local WindUI = loadstring(game:HttpGet("https://github.com/Footagesus/WindUI/releases/latest/download/main.lua"))()
 
     local Window = WindUI:CreateWindow({
-        Title = "Grind Client v0.4.9",
+        Title = "Grind Client",
         Icon = "rbxassetid://9009086352",
         Author = "C O S",
         Size = UDim2.fromOffset(1200, 1200),
@@ -245,14 +245,14 @@ do
                                 task.wait(_G.Delay)
                                 repeat
                                     Var.Root.CFrame = lake:GetPivot()
-                                    task.wait(0.25)
+                                    
 
                                     Re.Drink:FireServer(lake)
                                     Thirst = tonumber(thirstL.Text:match("(%d+)%%")) or 100
-
+                                    task.wait()
                                 until Thirst >= 100 or not _G.TG
                                 task.wait(_G.Delay)
-                                Var.Root.CFrame = lake:GetPivot() * CFrame.new(0, 1500, 0)
+                                Var.Root.CFrame = lake:GetPivot() * CFrame.new(0, 1900, 0)
                             end
 
                             Busy = false
@@ -270,14 +270,14 @@ do
                                task.wait(_G.Delay)
                                 repeat
                                     Var.Root.CFrame = node:GetPivot() * CFrame.new(0, 10, 0)
-                                    task.wait(0.25)
+                                    
 
                                     Re.Food:FireServer(foodmodel)
                                     Hunger = tonumber(hungerL.Text:match("(%d+)%%")) or 100
-
+                                    task.wait()
                                 until Hunger >= 100 or not _G.TG
                                 task.wait(_G.Delay)
-                                Var.Root.CFrame = node:GetPivot() * CFrame.new(0, 1500, 0)
+                                Var.Root.CFrame = node:GetPivot() * CFrame.new(0, 1900, 0)
                             end
 
                             Busy = false
