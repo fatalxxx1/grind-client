@@ -196,7 +196,6 @@ do
 
            
             if not _G.TG then
-                 Var.Root.Anchored = false
                 if workspace:FindFirstChild(".") then
                     workspace["."]:Destroy()
                 end
@@ -232,7 +231,6 @@ do
                     local Thirst = tonumber(thirstL.Text:match("(%d+)%%")) or 100
 
                     if PcGui.Visible or mobileGUi.Visible then
-                        Var.Root.Anchored = true
                         -- ================= DRINK =================
                         if Thirst < _G.TT and not Busy then
                             Busy = true
