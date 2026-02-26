@@ -26,19 +26,11 @@ player.CharacterAdded:Connect(function()
     Var.Root = GetRoot()
 end)
 
--- // Default State
-if Var.Root:GetAttribute("State") == nil then
-    Var.Root:SetAttribute("State", "Idle")
-end
 
-local function IsIdle()
-    return Var.Root and Var.Root:GetAttribute("State") == "Idle"
-end
-
-IsIdle()
 local Re = {
     Food = game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Food"),
-    Drink = game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("DrinkRemote")
+    Drink = game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("DrinkRemote"),
+    Shelter = game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Sheltered")
 }
 
 local function Dist(a, b)
@@ -52,7 +44,8 @@ do
         Title = "Grind Client v0.4.9",
         Icon = "rbxassetid://9009086352",
         Author = "C O S",
-        Size = UDim2.fromOffset(1200, 1200)
+        Size = UDim2.fromOffset(1200, 1200),
+        Resizable = false,
     })
     Window:Divider()
     Window:DisableTopbarButtons({
@@ -62,10 +55,6 @@ do
     Window:EditOpenButton({
     CornerRadius = UDim.new(0,16),
     StrokeThickness = 0,
-    Color = ColorSequence.new( -- gradient
-        Color3.fromHex("FF0F7B"), 
-        Color3.fromHex("F89B29")
-    ),
     OnlyMobile = false,
     Enabled = true,
     Draggable = false,
@@ -85,7 +74,7 @@ do
     info1:Select() -- Select Tab
     local Paragraph1 = info1:Paragraph({
         Title = "Warning",
-        Desc = "all of farm functions is blatant. \n use at your own RISK",
+        Desc = "all of farm functions is blatant. \nuse at your own RISK",
         Color = "Red",
         Image = "",
         ImageSize = 30,
@@ -94,6 +83,8 @@ do
         Locked = false
 
     })
+
+
     info1:Divider()
     local Tab1 = Section:Tab({
         Title = "Farm",
@@ -103,7 +94,7 @@ do
 
     _G.TG = false
     _G.Food = nil
-    _G.Delay = 5
+    _G.Delay = 1
     _G.HH = 100
     _G.TT = 100
     local Diet = nil
@@ -113,9 +104,19 @@ do
     local CreatureGui = PlayerGui:WaitForChild("CreatureInfoGui")
     local mobileGUi = game:GetService("Players").LocalPlayer.PlayerGui.HUDGui.BottomFrame.Mobile
     local PcGui = game:GetService("Players").LocalPlayer.PlayerGui.HUDGui.BottomFrame.Other
+    local weatherL = game:GetService("Players").LocalPlayer.PlayerGui.HUDGui.SideFrame.Mobile.MinimapFrame.Weather
 
     local thirstL = game:GetService("Players").LocalPlayer.PlayerGui.HUDGui.BottomFrame.Other.Thirst.HoverLabel
     local hungerL = game:GetService("Players").LocalPlayer.PlayerGui.HUDGui.BottomFrame.Other.Hunger.HoverLabel
+    
+
+    weatherL:GetPropertyChangedSignal("Text"):Connect(function()
+	    if weatherL.Text == 'ACID RAIN' then
+            Re.Shelter:FireServer(true)
+        else
+            Re.Shelter:FireServer(false)
+        end
+    end)
 
     Tab1:Section({
         Title = 'Settings',
@@ -125,11 +126,12 @@ do
         TextSize = 17,
         Opened = true
     })
+
     local DelayD = Tab1:Dropdown({
         Title = "Tp Delay",
         Desc = "Respond delay",
         Values = {"1", "1.5", "2","2.5",},
-        Value = "5",
+        Value = "1",
         Callback = function(option)
             _G.Delay = tonumber(option)
         end
@@ -180,6 +182,7 @@ do
             })
         end
     })
+
     Tab1:Divider()
     Tab1:Toggle({
         Title = "Start",
@@ -191,7 +194,7 @@ do
         Callback = function(Value)
             _G.TG = Value
 
-            -- STOP
+           
             if not _G.TG then
 
                 if workspace:FindFirstChild(".") then
@@ -211,6 +214,7 @@ do
             safePart.Name = "."
             safePart.CFrame = CFrame.new(0, 1500, 0)
             safePart.Parent = workspace
+            safePart.Material = Enum.Material.Neon
 
             task.spawn(function()
 
@@ -219,7 +223,8 @@ do
                 while _G.TG do
                     task.wait()
 
-                    if not Var.Root then
+                    if not Var.Root or _G.Food == nil then
+                        Var.Root.Anchored = false
                         continue
                     end
 
@@ -227,7 +232,7 @@ do
                     local Thirst = tonumber(thirstL.Text:match("(%d+)%%")) or 100
 
                     if PcGui.Visible or mobileGUi.Visible then
-
+                        Var.Root.Anchored = true
                         -- ================= DRINK =================
                         if Thirst < _G.TT and not Busy then
                             Busy = true
@@ -246,6 +251,8 @@ do
                                     Thirst = tonumber(thirstL.Text:match("(%d+)%%")) or 100
 
                                 until Thirst >= 100 or not _G.TG
+                                task.wait(0.1)
+                                Var.Root.CFrame = lake:GetPivot() * CFrame.new(0, 1500, 0)
                             end
 
                             Busy = false
@@ -260,7 +267,7 @@ do
 
                             if node and foodmodel then
                                 Var.Root.CFrame = node:GetPivot() * CFrame.new(0, 1500, 0)
-                                task.wait(1)
+                                task.wait(0.1)
                                 repeat
                                     Var.Root.CFrame = node:GetPivot() * CFrame.new(0, 10, 0)
                                     task.wait(0.25)
@@ -269,6 +276,8 @@ do
                                     Hunger = tonumber(hungerL.Text:match("(%d+)%%")) or 100
 
                                 until Hunger >= 100 or not _G.TG
+                                task.wait(0.1)
+                                Var.Root.CFrame = node:GetPivot() * CFrame.new(0, 1500, 0)
                             end
 
                             Busy = false
