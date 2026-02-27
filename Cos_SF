@@ -85,7 +85,7 @@ do
     local Paragraph2 = info1:Paragraph({
         Title = "Change Log",
         Desc = "Nothing..",
-        Color = "Gray",
+
         Image = "",
         ImageSize = 30,
         Thumbnail = "",
@@ -280,7 +280,7 @@ do
                             local lake = Var.Lake:FindFirstChild("Lake")
 
                             if lake then
-                                TweenTo(node:GetPivot() * CFrame.new(0, 1500, 0))
+                                TweenTo(lake:GetPivot() * CFrame.new(0, 1500, 0))
                                
                                 repeat
                                     TweenTo(lake:GetPivot())
