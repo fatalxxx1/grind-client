@@ -290,7 +290,7 @@ do
                                     task.wait()
                                 until Thirst >= 100 or not _G.TG
                                
-                                TweenTo(node:GetPivot() * CFrame.new(0, 1500, 0))
+                                TweenTo(lake:GetPivot() * CFrame.new(0, 1500, 0))
                             end
 
                             Busy = false
