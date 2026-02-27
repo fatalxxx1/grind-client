@@ -1,8 +1,9 @@
 repeat
     task.wait()
 until game:IsLoaded()
-
+-- ===SERVICES====
 local player = game.Players.LocalPlayer
+local TweenSer = game:GetService('TweenService')
 
 local function GetCharacter()
     return player.Character or player.CharacterAdded:Wait()
@@ -26,7 +27,6 @@ player.CharacterAdded:Connect(function()
     Var.Root = GetRoot()
 end)
 
-
 local Re = {
     Food = game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Food"),
     Drink = game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("DrinkRemote"),
@@ -45,19 +45,17 @@ do
         Icon = "rbxassetid://9009086352",
         Author = "C O S",
         Size = UDim2.fromOffset(1200, 1200),
-        Resizable = false,
+        Resizable = false
     })
     Window:Divider()
-    Window:DisableTopbarButtons({
-        "Fullscreen",
-    })
+    Window:DisableTopbarButtons({"Fullscreen"})
 
     Window:EditOpenButton({
-    CornerRadius = UDim.new(0,16),
-    StrokeThickness = 0,
-    OnlyMobile = false,
-    Enabled = true,
-    Draggable = false,
+        CornerRadius = UDim.new(0, 16),
+        StrokeThickness = 0,
+        OnlyMobile = false,
+        Enabled = true,
+        Draggable = false
     })
 
     local Section = Window:Section({
@@ -84,7 +82,18 @@ do
 
     })
 
+    local Paragraph2 = info1:Paragraph({
+        Title = "Change Log",
+        Desc = "Nothing..",
+        Color = "Gray",
+        Image = "",
+        ImageSize = 30,
+        Thumbnail = "",
+        ThumbnailSize = 80,
+        Locked = false
 
+    })
+    
     info1:Divider()
     local Tab1 = Section:Tab({
         Title = "Farm",
@@ -94,9 +103,12 @@ do
 
     _G.TG = false
     _G.Food = nil
+    _G.TWSPEED = 50
     _G.Delay = 1
     _G.HH = 100
     _G.TT = 100
+
+
     local Diet = nil
     local Carcass, Berry, Water = false, false, false
 
@@ -108,10 +120,35 @@ do
 
     local thirstL = game:GetService("Players").LocalPlayer.PlayerGui.HUDGui.BottomFrame.Other.Thirst.HoverLabel
     local hungerL = game:GetService("Players").LocalPlayer.PlayerGui.HUDGui.BottomFrame.Other.Hunger.HoverLabel
-    
+
+    local activeTW
+
+    local function TweenTo(CF)
+        if not Var.Root or not _G.TG then
+            return
+        end
+        if activeTW then
+            activeTW:Cancel()
+        end
+
+        local Dist = (CF.Position - Var.Root.Position).Magnitude
+        local time = Dist / _G.TWSPEED
+        local tween = TweenSer:Create(Var.Root, TweenInfo.new(time, Enum.EasingStyle.Linear), {
+            CFrame = CF
+        })
+        activeTW = tween
+        tween:Play()
+
+        local state = tween.Compeleted:wait()
+        if state ~= Enum.PlaybackState.Completed then
+            return false
+        end
+        return true
+    end
 
     weatherL:GetPropertyChangedSignal("Text"):Connect(function()
-	    if weatherL.Text == 'ACID RAIN' then
+
+        if weatherL.Text == 'ACID RAIN' or weatherL.Text == 'SNOW' or weatherL.Text == 'BLIZZARD' then
             Re.Shelter:FireServer(true)
         else
             Re.Shelter:FireServer(false)
@@ -127,15 +164,8 @@ do
         Opened = true
     })
 
-    local DelayD = Tab1:Dropdown({
-        Title = "Tp Delay",
-        Desc = "Respond delay",
-        Values = {"1", "1.5", "2","2.5",},
-        Value = "1",
-        Callback = function(option)
-            _G.Delay = tonumber(option)
-        end
-    })
+    
+
     Tab1:Divider()
     local MAXH = Tab1:Slider({
         Title = "HUNGER",
@@ -150,7 +180,6 @@ do
             _G.HH = value
         end
     })
-
 
     local MAXT = Tab1:Slider({
         Title = "THIRST",
@@ -174,6 +203,7 @@ do
         Value = "",
         Callback = function(option)
             _G.Food = option
+            if _G.Food == nil then return end
             WindUI:Notify({
                 Title = "Food",
                 Content = 'You Selected ' .. _G.Food,
@@ -183,9 +213,22 @@ do
         end
     })
 
-    Tab1:Divider()
+    local TS = Tab1:Slider({
+        Title = "Tween Speed",
+        Desc = "Lower = Slower",
+        Step = 10,
+        Value = {
+            Min = 20,
+            Max = 100,
+            Default = 50
+        },
+        Callback = function(value)
+            _G.TWSPEED = value
+        end
+    })
+
     Tab1:Toggle({
-        Title = "Start",
+        Title = "Start AFK",
         Desc = "Start AFK",
         Icon = "",
         Type = "Checkbox",
@@ -194,7 +237,6 @@ do
         Callback = function(Value)
             _G.TG = Value
 
-           
             if not _G.TG then
                 if workspace:FindFirstChild(".") then
                     workspace["."]:Destroy()
@@ -223,7 +265,6 @@ do
                     task.wait()
 
                     if not Var.Root or _G.Food == nil then
-                       
                         continue
                     end
 
@@ -234,23 +275,22 @@ do
                         -- ================= DRINK =================
                         if Thirst < _G.TT and not Busy then
                             Busy = true
-                            task.wait(_G.Delay)
+                            
 
                             local lake = Var.Lake:FindFirstChild("Lake")
 
                             if lake then
-                                Var.Root.CFrame = lake:GetPivot() * CFrame.new(0, 1500, 0)
-                                task.wait(_G.Delay)
+                                TweenTo(node:GetPivot() * CFrame.new(0, 1500, 0))
+                               
                                 repeat
-                                    Var.Root.CFrame = lake:GetPivot()
-                                    
+                                    TweenTo(lake:GetPivot())
 
                                     Re.Drink:FireServer(lake)
                                     Thirst = tonumber(thirstL.Text:match("(%d+)%%")) or 100
                                     task.wait()
                                 until Thirst >= 100 or not _G.TG
-                                task.wait(_G.Delay)
-                                Var.Root.CFrame = lake:GetPivot() * CFrame.new(0, 1900, 0)
+                               
+                                TweenTo(node:GetPivot() * CFrame.new(0, 1500, 0))
                             end
 
                             Busy = false
@@ -264,18 +304,17 @@ do
                             local foodmodel = workspace.Interactions.Food:FindFirstChild(_G.Food)
 
                             if node and foodmodel then
-                                Var.Root.CFrame = node:GetPivot() * CFrame.new(0, 1500, 0)
-                               task.wait(_G.Delay)
+                                TweenTo(node:GetPivot() * CFrame.new(0, 1500, 0))
+                                
                                 repeat
-                                    Var.Root.CFrame = node:GetPivot() * CFrame.new(0, 10, 0)
-                                    
+                                    TweenTo(node:GetPivot())
 
                                     Re.Food:FireServer(foodmodel)
                                     Hunger = tonumber(hungerL.Text:match("(%d+)%%")) or 100
                                     task.wait()
                                 until Hunger >= 100 or not _G.TG
-                                task.wait(_G.Delay)
-                                Var.Root.CFrame = node:GetPivot() * CFrame.new(0, 1900, 0)
+                                
+                                TweenTo(node:GetPivot() * CFrame.new(0, 1500, 0))
                             end
 
                             Busy = false
@@ -284,11 +323,25 @@ do
 
                     -- SAFE TP
                     if not Busy and safePart then
-                        task.wait(_G.Delay)
+                        
                         Var.Root.CFrame = safePart.CFrame * CFrame.new(0, 5, 0)
                     end
                 end
             end)
         end
     })
+    Tab1:Divider()
+
+    local STTG = Tab1:Toggle({
+    Title = "Auto Shelter",
+    Desc = "Auto Shelter when dangerous weather",
+    Icon = "",
+    Type = "Checkbox",
+    Value = false, -- default value
+    Callback = function(Value) 
+        
+    end
+    })
+
+
 end
