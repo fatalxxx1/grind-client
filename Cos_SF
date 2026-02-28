@@ -47,6 +47,13 @@ do
         Size = UDim2.fromOffset(1200, 1200),
         Resizable = false
     })
+    Window:Tag({
+        Title = "Beta",
+        Icon = "github",
+        Color = Color3.fromHex("#30ff6a"),
+        Radius = 0, -- from 0 to 13
+    })
+
     Window:Divider()
     Window:DisableTopbarButtons({"Fullscreen"})
 
@@ -103,7 +110,7 @@ do
 
     _G.TG = false
     _G.Food = nil
-    _G.TWSPEED = 170
+    _G.TWSPEED = 260
     _G.Delay = 1
     _G.HH = 100
     _G.TT = 100
@@ -220,8 +227,8 @@ do
         Step = 10,
         Value = {
             Min = 20,
-            Max = 170,
-            Default = 170
+            Max = 260,
+            Default = 260
         },
         Callback = function(value)
             _G.TWSPEED = value
@@ -280,11 +287,10 @@ do
                             local lake = Var.Lake:FindFirstChild("Lake")
 
                             if lake then
-                                -- Go above lake
-                                if TweenTo(lake:GetPivot() * CFrame.new(0, 1500, 0)) then
-
-                                   
-
+                               
+                                if TweenTo(lake:GetPivot()) then
+                                     wait()
+                
                                         repeat
                                             Var.Root.CFrame = lake:GetPivot()
                                             Re.Drink:FireServer(lake)
@@ -294,9 +300,6 @@ do
 
                                         until Thirst >= 100 or not _G.TG
 
-                                        
-                                        TweenTo(lake:GetPivot() * CFrame.new(0, 1500, 0))
-                                 
                                 end
                             end
                             Busy = false
@@ -310,11 +313,8 @@ do
                             local foodmodel = workspace.Interactions.Food:FindFirstChild(_G.Food)
 
                             if node and foodmodel then
-                                if TweenTo(node:GetPivot() * CFrame.new(0, 1500, 0)) then
-
-                                    
-                                   
-
+                                if TweenTo(node:GetPivot()) then
+                                    wait()
                                         repeat
                                             Var.Root.CFrame = node:GetPivot()
                                             Re.Drink:FireServer(node)
@@ -323,10 +323,6 @@ do
                                             task.wait()
 
                                         until Thirst >= 100 or not _G.TG
-
-                                        
-                                        TweenTo(node:GetPivot() * CFrame.new(0, 1500, 0))
-                                   
                                 end
                             end
 
@@ -336,8 +332,7 @@ do
 
                     -- SAFE TP
                     if not Busy and safePart then
-
-                        Var.Root.CFrame = safePart.CFrame * CFrame.new(0, 5, 0)
+                        TweenTo(safePart.CFrame * CFrame.new(0, 5, 0))
                     end
                 end
             end)
