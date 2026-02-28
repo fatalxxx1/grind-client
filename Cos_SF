@@ -289,7 +289,7 @@ do
                             if lake then
                                
                                 if TweenTo(lake:GetPivot()) then
-                                     wait()
+                                     wait(1)
                 
                                         repeat
                                             Var.Root.CFrame = lake:GetPivot()
@@ -313,10 +313,10 @@ do
                             local foodmodel = workspace.Interactions.Food:FindFirstChild(_G.Food)
 
                             if node and foodmodel then
-                                if TweenTo(node:GetPivot()) then
-                                    wait()
+                                if TweenTo(node:GetPivot()*CFrame.new(0,10,0)) then
+                                    wait(1)
                                         repeat
-                                            Var.Root.CFrame = node:GetPivot()
+                                            Var.Root.CFrame = node:GetPivot()*CFrame.new(0,10,0)
                                             Re.Drink:FireServer(node)
 
                                             Thirst = tonumber(thirstL.Text:match("(%d+)%%")) or 100
