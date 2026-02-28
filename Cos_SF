@@ -209,9 +209,6 @@ do
         Value = "",
         Callback = function(option)
             _G.Food = option
-            if _G.Food == nil then
-                return
-            end
             WindUI:Notify({
                 Title = "Food",
                 Content = 'You Selected ' .. _G.Food,
@@ -306,7 +303,7 @@ do
                         end
 
                         -- ================= EAT =================
-                        if Hunger < _G.HH and not _G.Food == nil and not Busy then
+                        if Hunger < _G.HH  and not Busy then
                             Busy = true
 
                             local node = Var.FoodNode:FindFirstChild(_G.Food)
