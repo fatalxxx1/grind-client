@@ -103,7 +103,7 @@ do
 
     _G.TG = false
     _G.Food = nil
-    _G.TWSPEED = 500
+    _G.TWSPEED = 170
     _G.Delay = 1
     _G.HH = 100
     _G.TT = 100
@@ -171,7 +171,7 @@ do
         Desc = "tp at %",
         Step = 10,
         Value = {
-            Min = 100,
+            Min = 10,
             Max = 100,
             Default = 100
         },
@@ -220,8 +220,8 @@ do
         Step = 10,
         Value = {
             Min = 20,
-            Max = 500,
-            Default = 100
+            Max = 170,
+            Default = 170
         },
         Callback = function(value)
             _G.TWSPEED = value
@@ -283,12 +283,12 @@ do
                                 -- Go above lake
                                 if TweenTo(lake:GetPivot() * CFrame.new(0, 1500, 0)) then
 
-                                    -- Go down to lake
-                                    if TweenTo(lake:GetPivot()) then
+                                   
 
                                         repeat
+                                            Var.Root.CFrame = lake:GetPivot()
                                             Re.Drink:FireServer(lake)
-
+                                             
                                             Thirst = tonumber(thirstL.Text:match("(%d+)%%")) or 100
                                             task.wait()
 
@@ -296,7 +296,7 @@ do
 
                                         
                                         TweenTo(lake:GetPivot() * CFrame.new(0, 1500, 0))
-                                    end
+                                 
                                 end
                             end
                             Busy = false
@@ -312,10 +312,11 @@ do
                             if node and foodmodel then
                                 if TweenTo(node:GetPivot() * CFrame.new(0, 1500, 0)) then
 
-                                    -- Go down to lake
-                                    if TweenTo(node:GetPivot()) then
+                                    
+                                   
 
                                         repeat
+                                            Var.Root.CFrame = node:GetPivot()
                                             Re.Drink:FireServer(node)
 
                                             Thirst = tonumber(thirstL.Text:match("(%d+)%%")) or 100
@@ -325,7 +326,7 @@ do
 
                                         
                                         TweenTo(node:GetPivot() * CFrame.new(0, 1500, 0))
-                                    end
+                                   
                                 end
                             end
 
