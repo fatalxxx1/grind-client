@@ -51,7 +51,7 @@ do
         Title = "Beta",
         Icon = "github",
         Color = Color3.fromHex("#30ff6a"),
-        Radius = 0, -- from 0 to 13
+        Radius = 0 -- from 0 to 13
     })
 
     Window:Divider()
@@ -139,7 +139,7 @@ do
         end
 
         local Dist = (CF.Position - Var.Root.Position).Magnitude
-        local time = math.clamp(Dist / _G.TWSPEED ,0.05,3)
+        local time = math.clamp(Dist / _G.TWSPEED, 0.05, 3)
         local tween = TweenSer:Create(Var.Root, TweenInfo.new(time, Enum.EasingStyle.Linear), {
             CFrame = CF
         })
@@ -273,7 +273,7 @@ do
                     task.wait()
 
                     if not Var.Root or _G.Food == nil then
-                        continue
+                         continue
                     end
 
                     local Hunger = tonumber(hungerL.Text:match("(%d+)%%")) or 100
@@ -287,18 +287,18 @@ do
                             local lake = Var.Lake:FindFirstChild("Lake")
 
                             if lake then
-                               
-                                if TweenTo(lake:GetPivot()) then
-                                     wait(1)
-                
-                                        repeat
-                                            Var.Root.CFrame = lake:GetPivot()
-                                            Re.Drink:FireServer(lake)
-                                             
-                                            Thirst = tonumber(thirstL.Text:match("(%d+)%%")) or 100
-                                            task.wait()
 
-                                        until Thirst >= 100 or not _G.TG
+                                if TweenTo(lake:GetPivot()) then
+                                    wait(1)
+
+                                    repeat
+                                        Var.Root.CFrame = lake:GetPivot()
+                                        Re.Drink:FireServer(lake)
+
+                                        Thirst = tonumber(thirstL.Text:match("(%d+)%%")) or 100
+                                        task.wait()
+
+                                    until Thirst >= 100 or not _G.TG
 
                                 end
                             end
@@ -306,23 +306,22 @@ do
                         end
 
                         -- ================= EAT =================
-                        if Hunger < _G.HH and _G.Food and not Busy then
+                        if Hunger < _G.HH and not _G.Food == nil and not Busy then
                             Busy = true
 
                             local node = Var.FoodNode:FindFirstChild(_G.Food)
                             local foodmodel = workspace.Interactions.Food:FindFirstChild(_G.Food)
 
                             if node and foodmodel then
-                                if TweenTo(node:GetPivot()*CFrame.new(0,10,0)) then
+                                if TweenTo(node:GetPivot() * CFrame.new(0, 10, 0)) then
                                     wait(1)
-                                        repeat
-                                            Var.Root.CFrame = node:GetPivot()*CFrame.new(0,10,0)
-                                            Re.Food:FireServer(node)
+                                    repeat
+                                        Var.Root.CFrame = node:GetPivot() * CFrame.new(0, 40, 0)
+                                            Re.Food:FireServer(foodmodel)
+                                        Hunger = tonumber(hungerL.Text:match("(%d+)%%")) or 100
+                                        task.wait()
 
-                                            Hunger = tonumber(hungerL.Text:match("(%d+)%%")) or 100
-                                            task.wait()
-
-                                        until Hunger >= 100 or not _G.TG
+                                    until Hunger >= 100 or not _G.TG
                                 end
                             end
 
