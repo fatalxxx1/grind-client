@@ -51,7 +51,7 @@ do
         Title = "Beta",
         Icon = "github",
         Color = Color3.fromHex("#30ff6a"),
-        Radius = 0 -- from 0 to 13
+        Radius = 0 
     })
 
     Window:Divider()
@@ -155,11 +155,13 @@ do
 
     weatherL:GetPropertyChangedSignal("Text"):Connect(function()
         if _G.ST then
-            if weatherL.Text == 'ACID RAIN' or weatherL.Text == 'SNOW' or weatherL.Text == 'BLIZZARD' then
+            if weatherL.Text == 'ACID RAIN' or weatherL.Text == 'SNOW' or weatherL.Text == 'BLIZZARD' or weatherL.Text == 'Heatwave' then
                 Re.Shelter:FireServer(true)
             else
                 Re.Shelter:FireServer(false)
             end
+        else
+            Re.Shelter:FireServer(false)
         end
     end)
 
