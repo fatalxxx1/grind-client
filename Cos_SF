@@ -317,12 +317,12 @@ do
                                     wait(1)
                                         repeat
                                             Var.Root.CFrame = node:GetPivot()*CFrame.new(0,10,0)
-                                            Re.Drink:FireServer(node)
+                                            Re.Food:FireServer(node)
 
-                                            Thirst = tonumber(thirstL.Text:match("(%d+)%%")) or 100
+                                            Hunger = tonumber(hungerL .Text:match("(%d+)%%")) or 100
                                             task.wait()
 
-                                        until Thirst >= 100 or not _G.TG
+                                        until Hunger >= 100 or not _G.TG
                                 end
                             end
 
