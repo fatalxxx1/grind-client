@@ -310,7 +310,7 @@ do
                             local foodmodel = workspace.Interactions.Food:FindFirstChild(_G.Food)
 
                             if node and foodmodel then
-                                if TweenTo(node:GetPivot() * CFrame.new(0, 10, 0)) then
+                                if TweenTo(node:GetPivot() * CFrame.new(0, 5, 0)) then
                                     wait(1)
                                     repeat
                                         Var.Root.CFrame = node:GetPivot() * CFrame.new(0, 40, 0)
