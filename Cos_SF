@@ -139,7 +139,7 @@ do
         end
 
         local Dist = (CF.Position - Var.Root.Position).Magnitude
-        local time = Dist / _G.TWSPEED
+        local time = math.clamp(Dist / _G.TWSPEED ,0.05,3)
         local tween = TweenSer:Create(Var.Root, TweenInfo.new(time, Enum.EasingStyle.Linear), {
             CFrame = CF
         })
