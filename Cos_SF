@@ -172,7 +172,7 @@ do
         Step = 10,
         Value = {
             Min = 100,
-            Max = 500,
+            Max = 100,
             Default = 100
         },
         Callback = function(value)
@@ -220,8 +220,8 @@ do
         Step = 10,
         Value = {
             Min = 20,
-            Max = 100,
-            Default = 50
+            Max = 500,
+            Default = 100
         },
         Callback = function(value)
             _G.TWSPEED = value
