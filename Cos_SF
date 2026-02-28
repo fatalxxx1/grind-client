@@ -84,7 +84,7 @@ do
 
     local Paragraph2 = info1:Paragraph({
         Title = "Change Log",
-        Desc = "Nothing..",
+        Desc = "Fix Tween",
 
         Image = "",
         ImageSize = 30,
@@ -93,7 +93,7 @@ do
         Locked = false
 
     })
-    
+
     info1:Divider()
     local Tab1 = Section:Tab({
         Title = "Farm",
@@ -103,11 +103,11 @@ do
 
     _G.TG = false
     _G.Food = nil
-    _G.TWSPEED = 50
+    _G.TWSPEED = 500
     _G.Delay = 1
     _G.HH = 100
     _G.TT = 100
-
+    _G.ST = false
 
     local Diet = nil
     local Carcass, Berry, Water = false, false, false
@@ -139,7 +139,7 @@ do
         activeTW = tween
         tween:Play()
 
-        local state = tween.Compeleted:wait()
+        local state = tween.Completed:wait()
         if state ~= Enum.PlaybackState.Completed then
             return false
         end
@@ -147,11 +147,12 @@ do
     end
 
     weatherL:GetPropertyChangedSignal("Text"):Connect(function()
-
-        if weatherL.Text == 'ACID RAIN' or weatherL.Text == 'SNOW' or weatherL.Text == 'BLIZZARD' then
-            Re.Shelter:FireServer(true)
-        else
-            Re.Shelter:FireServer(false)
+        if _G.ST then
+            if weatherL.Text == 'ACID RAIN' or weatherL.Text == 'SNOW' or weatherL.Text == 'BLIZZARD' then
+                Re.Shelter:FireServer(true)
+            else
+                Re.Shelter:FireServer(false)
+            end
         end
     end)
 
@@ -164,16 +165,14 @@ do
         Opened = true
     })
 
-    
-
     Tab1:Divider()
     local MAXH = Tab1:Slider({
         Title = "HUNGER",
         Desc = "tp at %",
         Step = 10,
         Value = {
-            Min = 20,
-            Max = 100,
+            Min = 100,
+            Max = 500,
             Default = 100
         },
         Callback = function(value)
@@ -203,7 +202,9 @@ do
         Value = "",
         Callback = function(option)
             _G.Food = option
-            if _G.Food == nil then return end
+            if _G.Food == nil then
+                return
+            end
             WindUI:Notify({
                 Title = "Food",
                 Content = 'You Selected ' .. _G.Food,
@@ -275,24 +276,29 @@ do
                         -- ================= DRINK =================
                         if Thirst < _G.TT and not Busy then
                             Busy = true
-                            
 
                             local lake = Var.Lake:FindFirstChild("Lake")
 
                             if lake then
-                                TweenTo(lake:GetPivot() * CFrame.new(0, 1500, 0))
-                               
-                                repeat
-                                    TweenTo(lake:GetPivot())
+                                -- Go above lake
+                                if TweenTo(lake:GetPivot() * CFrame.new(0, 1500, 0)) then
 
-                                    Re.Drink:FireServer(lake)
-                                    Thirst = tonumber(thirstL.Text:match("(%d+)%%")) or 100
-                                    task.wait()
-                                until Thirst >= 100 or not _G.TG
-                               
-                                TweenTo(lake:GetPivot() * CFrame.new(0, 1500, 0))
+                                    -- Go down to lake
+                                    if TweenTo(lake:GetPivot()) then
+
+                                        repeat
+                                            Re.Drink:FireServer(lake)
+
+                                            Thirst = tonumber(thirstL.Text:match("(%d+)%%")) or 100
+                                            task.wait()
+
+                                        until Thirst >= 100 or not _G.TG
+
+                                        
+                                        TweenTo(lake:GetPivot() * CFrame.new(0, 1500, 0))
+                                    end
+                                end
                             end
-
                             Busy = false
                         end
 
@@ -304,17 +310,23 @@ do
                             local foodmodel = workspace.Interactions.Food:FindFirstChild(_G.Food)
 
                             if node and foodmodel then
-                                TweenTo(node:GetPivot() * CFrame.new(0, 1500, 0))
-                                
-                                repeat
-                                    TweenTo(node:GetPivot())
+                                if TweenTo(node:GetPivot() * CFrame.new(0, 1500, 0)) then
 
-                                    Re.Food:FireServer(foodmodel)
-                                    Hunger = tonumber(hungerL.Text:match("(%d+)%%")) or 100
-                                    task.wait()
-                                until Hunger >= 100 or not _G.TG
-                                
-                                TweenTo(node:GetPivot() * CFrame.new(0, 1500, 0))
+                                    -- Go down to lake
+                                    if TweenTo(node:GetPivot()) then
+
+                                        repeat
+                                            Re.Drink:FireServer(node)
+
+                                            Thirst = tonumber(thirstL.Text:match("(%d+)%%")) or 100
+                                            task.wait()
+
+                                        until Thirst >= 100 or not _G.TG
+
+                                        
+                                        TweenTo(node:GetPivot() * CFrame.new(0, 1500, 0))
+                                    end
+                                end
                             end
 
                             Busy = false
@@ -323,7 +335,7 @@ do
 
                     -- SAFE TP
                     if not Busy and safePart then
-                        
+
                         Var.Root.CFrame = safePart.CFrame * CFrame.new(0, 5, 0)
                     end
                 end
@@ -333,15 +345,14 @@ do
     Tab1:Divider()
 
     local STTG = Tab1:Toggle({
-    Title = "Auto Shelter",
-    Desc = "Auto Shelter when dangerous weather",
-    Icon = "",
-    Type = "Checkbox",
-    Value = false, -- default value
-    Callback = function(Value) 
-        
-    end
+        Title = "Auto Shelter",
+        Desc = "Auto Shelter when dangerous weather",
+        Icon = "",
+        Type = "Checkbox",
+        Value = false, -- default value
+        Callback = function(Value)
+            _G.ST = Value
+        end
     })
-
 
 end
