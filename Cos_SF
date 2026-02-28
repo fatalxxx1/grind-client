@@ -173,6 +173,23 @@ do
     })
 
     Tab1:Divider()
+
+    local FoodD = Tab1:Dropdown({
+        Title = "Food",
+        Desc = "Select Food",
+        Values = {"Grass", "Carcass"},
+        Value = "",
+        Callback = function(option)
+            _G.Food = option
+            WindUI:Notify({
+                Title = "Food",
+                Content = 'You Selected ' .. _G.Food,
+                Duration = 1,
+                Icon = "hamburger"
+            })
+        end
+    })
+
     local MAXH = Tab1:Slider({
         Title = "HUNGER",
         Desc = "tp at %",
@@ -201,23 +218,9 @@ do
         end
     })
 
+    
+    
     Tab1:Divider()
-    local FoodD = Tab1:Dropdown({
-        Title = "Food",
-        Desc = "Select Food",
-        Values = {"Grass", "Carcass"},
-        Value = "",
-        Callback = function(option)
-            _G.Food = option
-            WindUI:Notify({
-                Title = "Food",
-                Content = 'You Selected ' .. _G.Food,
-                Duration = 1,
-                Icon = "hamburger"
-            })
-        end
-    })
-
     local TS = Tab1:Slider({
         Title = "Tween Speed",
         Desc = "Lower = Slower",
