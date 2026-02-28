@@ -315,10 +315,10 @@ do
                             local foodmodel = workspace.Interactions.Food:FindFirstChild(_G.Food)
 
                             if node and foodmodel then
-                                if TweenTo(node:GetPivot() * CFrame.new(0, 5, 0)) then
+                                if TweenTo(node:GetPivot()) then
                                     wait(1)
                                     repeat
-                                        Var.Root.CFrame = node:GetPivot() * CFrame.new(0, 40, 0)
+                                        Var.Root.CFrame = node:GetPivot() * CFrame.new(0, 5, 0)
                                             Re.Food:FireServer(foodmodel)
                                         Hunger = tonumber(hungerL.Text:match("(%d+)%%")) or 100
                                         task.wait()
