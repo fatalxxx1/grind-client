@@ -41,7 +41,7 @@ do
     local WindUI = loadstring(game:HttpGet("https://github.com/Footagesus/WindUI/releases/latest/download/main.lua"))()
 
     local Window = WindUI:CreateWindow({
-        Title = "Grind Client",
+        Title = "Grind Client (Glazed)",
         Icon = "rbxassetid://9009086352",
         Author = "C O S",
         Size = UDim2.fromOffset(1200, 1200),
@@ -171,7 +171,7 @@ do
         Desc = "tp at %",
         Step = 10,
         Value = {
-            Min = 10,
+            Min = 20,
             Max = 100,
             Default = 100
         },
