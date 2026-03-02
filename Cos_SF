@@ -1,9 +1,4 @@
-repeat
-    task.wait()
-until game:IsLoaded()
--- ===SERVICES====
 local player = game.Players.LocalPlayer
-local TweenSer = game:GetService('TweenService')
 
 local function GetCharacter()
     return player.Character or player.CharacterAdded:Wait()
@@ -14,31 +9,14 @@ local function GetRoot()
     return char:WaitForChild("HumanoidRootPart")
 end
 
--- // Vars
-local Var = {
-    Char = GetCharacter(),
-    Root = GetRoot(),
-    FoodNode = workspace:WaitForChild("Interactions"):WaitForChild("FoodNodes"),
-    Lake = workspace:WaitForChild("Interactions"):WaitForChild("Lakes")
-}
-
-player.CharacterAdded:Connect(function()
-    Var.Char = GetCharacter()
-    Var.Root = GetRoot()
-end)
-
-local Re = {
-    Food = game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Food"),
-    Drink = game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("DrinkRemote"),
-    Shelter = game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Sheltered")
-}
-
-local function Dist(a, b)
-    return (a - b).Magnitude
-end
+_G.TG = false
+_G.TG1 = false
+_G.TG2 = false
+_G.TT = nil
 
 do
-    local WindUI = loadstring(game:HttpGet("https://github.com/Footagesus/WindUI/releases/latest/download/main.lua"))()
+    local WindUI = loadstring(game:HttpGet(
+        "https://github.com/Footagesus/WindUI/releases/latest/download/main.lua"))()
 
     local Window = WindUI:CreateWindow({
         Title = "Grind Client (Glazed)",
@@ -47,11 +25,12 @@ do
         Size = UDim2.fromOffset(1200, 1200),
         Resizable = false
     })
+
     Window:Tag({
         Title = "Beta",
         Icon = "github",
         Color = Color3.fromHex("#30ff6a"),
-        Radius = 0 
+        Radius = 0
     })
 
     Window:Divider()
@@ -76,12 +55,203 @@ do
         Icon = "badge-info",
         Locked = false
     })
-    info1:Select() -- Select Tab
-    local Paragraph1 = info1:Paragraph({
+
+    info1:Select()
+
+    info1:Paragraph({
         Title = "Warning",
         Desc = "all of farm functions is blatant. \nuse at your own RISK",
-        Color = "Red",
-        Image = "",
+        Color = "Red"
+    })
+
+    info1:Paragraph({
+        Title = "Change Log",
+        Desc = "Fix Tween"
+    })
+
+    info1:Divider()
+
+    local Tab1 = Section:Tab({
+        Title = "Farm",
+        Icon = "hamburger",
+        Locked = false
+    })
+
+    local Dropdown = Tab1:Dropdown({
+    Title = "Dropdown",
+    Desc = "Dropdown Description",
+    Values = { "Boxer", "Samurai Master", "Samurai","tan24"  },
+    Value = "Category A",
+    Callback = function(option) 
+        _G.TT = option 
+    end
+    })
+
+    local togge1 = Tab1:Toggle({
+        Title = "Start AFK",
+        Desc = "Start AFK",
+        Type = "Checkbox",
+        Value = false,
+
+        Callback = function(Value)
+            _G.TG = Value
+            if not _G.TG then return end
+
+            task.spawn(function()
+                repeat
+                   
+                    local character = GetCharacter()
+                    local root = character:FindFirstChild("HumanoidRootPart")
+                    
+                    if not root then
+                        continue
+                    end
+
+                    local liveFolder = workspace:FindFirstChild("Live")
+                    if not liveFolder then 
+                        continue 
+                    end
+
+                    
+                    for _, v in pairs(liveFolder:GetChildren()) do
+                        if string.find(v.Name, "Samurai")
+                        or string.find(v.Name, "Cyborg")
+                        or string.find(v.Name, "Zombie")
+                        or string.find(v.Name, "Prison")
+                        or string.find(v.Name, "Police")
+                        or string.find(v.Name, "elite") 
+						 or string.find(v.Name, "kuza") 
+						 or string.find(v.Name, "Mafia") 
+						 or string.find(v.Name, "Leaders") 
+or string.find(v.Name, "."..player.Name.."entity clone")
+                        or string.find(v.Name, "Kira") then
+                            
+                             local muRoot = v:FindFirstChild("HumanoidRootPart")
+                            local humanoid = v:FindFirstChild("Humanoid")
+                            
+                            if muRoot and humanoid and humanoid.Health > 0 then
+                             local targetCFrame = muRoot.CFrame * CFrame.new(0, 7.1, 0)
+                                root.CFrame = targetCFrame * CFrame.Angles(math.rad(-90), 0, 0)
+                                
+                                break -- Teleport to first enemy found then restart loop
+                            end
+                        end
+                    end
+                    
+                   task.wait()
+                until not _G.TG
+            end)
+        end
+    })
+
+
+
+    local toggle = Tab1:Toggle({
+        Title = "Start ",
+        Desc = "Start farm selected",
+        Type = "Checkbox",
+        Value = false,
+
+        Callback = function(Value)
+            _G.TG1 = Value
+            if not _G.TG1 then return end
+
+      task.spawn(function()
+    while _G.TG1 do
+        local character = GetCharacter()
+        local root = character:FindFirstChild("HumanoidRootPart")
+        local liveFolder = workspace:FindFirstChild("Live")
+
+        if not root or not liveFolder or not _G.TT then
+            task.wait()
+            continue
+        end
+
+        local target
+
+        -- หา mob ก่อน
+        for _, v in pairs(liveFolder:GetChildren()) do
+            if string.find(v.Name, _G.TT) then
+                local humanoid = v:FindFirstChild("Humanoid")
+                if humanoid and humanoid.Health > 0 then
+                    target = v
+                    break
+                end
+            end
+        end
+
+        -- ถ้ามี target ให้ตีจนตาย
+        if target then
+            local humanoid = target:FindFirstChild("Humanoid")
+            local muRoot = target:FindFirstChild("HumanoidRootPart")
+
+            repeat
+                root.CFrame = muRoot.CFrame * CFrame.new(0,7.1,0) 
+                    * CFrame.Angles(math.rad(-90),0,0)
+
+                task.wait()
+            until not _G.TG1 or humanoid.Health <=0 
+        end
+
+        task.wait()
+    end
+end)
+        end
+    })
+
+  local toggle2 = Tab1:Toggle({
+        Title = "Start Hit ur Self",
+        Desc = "Start farm selected",
+        Type = "Checkbox",
+        Value = false,
+
+        Callback = function(Value)
+            _G.TG2 = Value
+            if not _G.TG2 then return end
+
+      task.spawn(function()
+    while _G.TG2 do
+        local character = GetCharacter()
+        local root = character:FindFirstChild("HumanoidRootPart")
+        local liveFolder = workspace:FindFirstChild("Live")
+
+        if not root or not liveFolder  then
+            task.wait()
+            continue
+        end
+
+        local target
+
+        -- หา mob ก่อน
+        for _, v in pairs(liveFolder:GetChildren()) do
+            if string.find(v.Name, '%.'..player.Name..' entity clone') then
+                local humanoid = v:FindFirstChild("Humanoid")
+                if humanoid and humanoid.Health > 0 then
+                    target = v
+                    break
+                end
+            end
+        end
+
+        -- ถ้ามี target ให้ตีจนตาย
+        if target then
+            local humanoid = target:FindFirstChild("Humanoid")
+            local muRoot = target:FindFirstChild("HumanoidRootPart")
+
+            repeat
+                root.CFrame = muRoot.CFrame * CFrame.new(0,7.1,0) 
+                    * CFrame.Angles(math.rad(-90),0,0)
+
+                task.wait()
+            until not _G.TG2 or humanoid.Health <=0 
+        end
+
+        task.wait()
+    end
+end)
+        end
+    })
+end        Image = "",
         ImageSize = 30,
         Thumbnail = "",
         ThumbnailSize = 80,
