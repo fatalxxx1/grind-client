@@ -273,7 +273,7 @@ do
                     end
                     
                    task.wait()
-                until _G.TG1
+                until not _G.TG1
             end)
 
             
