@@ -137,8 +137,8 @@ do
 
                 
             vim:SendMouseButtonEvent(
-            mouseLocation.X,
-            mouseLocation.Y,
+            0,
+           0,
                 0,          -- ปุ่ม 0 = Left Click
                 true,       -- true = กดลง
             game,
@@ -146,8 +146,8 @@ do
             ) 
             task.wait(0.5)
              vim:SendMouseButtonEvent(
-            mouseLocation.X,
-            mouseLocation.Y,
+            0,
+            0,
                 0,          -- ปุ่ม 0 = Left Click
                 false,       -- true = กดลง
             game,
@@ -164,7 +164,7 @@ do
     local Dropdown = Tab1:Dropdown({
     Title = "Dropdown",
     Desc = "Dropdown Description",
-    Values = { "Boxer", "Samurai Master", "Samurai","tan24"  },
+    Values = { "Boxer", "Samurai Master", "Samurai","Prison","tan24"  },
     Value = "",
     Callback = function(option) 
         _G.TT = option 
@@ -244,7 +244,7 @@ do
 
             task.spawn(function()
 
-                repeat
+                while _G.TG1 do
                    
                     local character = GetCharacter()
                     local root = character:FindFirstChild("HumanoidRootPart")
@@ -285,8 +285,8 @@ do
                     end
                     
                    task.wait()
-                until not _G.TG1
-end)
+                end
+            end)
 
             
         end
@@ -303,12 +303,13 @@ end)
             if not _G.TG3 then return end
 
            task.spawn(function()
-            repeat
+                while  _G.TG3 do
                    
                     local character = GetCharacter()
                     local root = character:FindFirstChild("HumanoidRootPart")
                     
                     if not root then
+                        task.wait()
                         continue
                     end
 
@@ -316,27 +317,25 @@ end)
                     if not liveFolder then 
                         continue 
                     end
-
                     
                     for _, v in pairs(liveFolder:GetChildren()) do
                         if string.find(v.Name, "Zombie")
                         or string.find(v.Name, "Vampire")
                         or string.find(v.Name, "DIO") then
                             
-                             local muRoot = v:FindFirstChild("HumanoidRootPart")
+                            local muRoot = v:FindFirstChild("HumanoidRootPart")
                             local humanoid = v:FindFirstChild("Humanoid")
                             
                             if muRoot and humanoid and humanoid.Health > 0 then
                              local targetCFrame = muRoot.CFrame * CFrame.new(0, 7.1, 0)
                                 root.CFrame = targetCFrame * CFrame.Angles(math.rad(-90), 0, 0)
-                                
                                 break
                             end
                         end
                     end
                     
                    task.wait()
-                until not _G.TG3
+                end
             end)
 
             
@@ -355,7 +354,7 @@ end)
             if not _G.TG4 then return end
 
            task.spawn(function()
-            repeat
+            while _G.TG4 do
                    
                     local character = GetCharacter()
                     local root = character:FindFirstChild("HumanoidRootPart")
@@ -386,7 +385,7 @@ end)
                     end
                     
                    task.wait()
-                until not _G.TG4
+                end
             end)
 
             
@@ -407,7 +406,7 @@ end)
             if not _G.TG2 then return end
 
             task.spawn(function()
-              repeat
+              while _G.TG2 do
                    
                     local character = GetCharacter()
                     local root = character:FindFirstChild("HumanoidRootPart")
@@ -438,7 +437,7 @@ end)
                     end
                     
                    task.wait()
-                until not _G.TG2
+                end
             end)
         end
     })
