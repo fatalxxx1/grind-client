@@ -121,7 +121,7 @@ do
 
         while _G.AT do
 
-            if not _G.AutoClickDropdown then continue end
+            if _G.AutoClickDropdown == nil then continue end
 
 
             if _G.AutoClickDropdown == "Remote" then
@@ -201,7 +201,7 @@ do
                         continue 
                     end
                     if not _G.TT then
-
+                        task.wait()
                         continue
                     end
                     
@@ -407,47 +407,38 @@ end)
             if not _G.TG2 then return end
 
             task.spawn(function()
-                while _G.TG2 do
+              repeat
                    
                     local character = GetCharacter()
-                    local root = character:WaitForChild("HumanoidRootPart")
+                    local root = character:FindFirstChild("HumanoidRootPart")
                     
                     if not root then
                         continue
                     end
 
-                    local liveFolder = workspace:WaitForChild("Live")
+                    local liveFolder = workspace:FindFirstChild("Live")
                     if not liveFolder then 
                         continue 
                     end
 
-                    local Target
                     
                     for _, v in pairs(liveFolder:GetChildren()) do
-                        if string.find(v.Name, "."..player.Name..' entity') then
-                           Target = v
-                            break
+                        if string.find(v.Name, '.'..player.Name..' entity') then
+                            
+                             local muRoot = v:FindFirstChild("HumanoidRootPart")
+                            local humanoid = v:FindFirstChild("Humanoid")
+                            
+                            if muRoot and humanoid and humanoid.Health > 0 then
+                             local targetCFrame = muRoot.CFrame * CFrame.new(0, 7.1, 0)
+                                root.CFrame = targetCFrame * CFrame.Angles(math.rad(-90), 0, 0)
+                                
+                                break
+                            end
                         end
                     end
                     
-                        if Target == nil then
-                         task.wait()
-                        continue
-                    end
-                     
-                            local muRoot = Target:WaitForChild("HumanoidRootPart")
-                            local humanoid = Target:WaitForChild("Humanoid")
-                          
-                           
-                                repeat
-                                    local targetCFrame = muRoot.CFrame * CFrame.new(0, 7.1, 0)
-                                    root.CFrame = targetCFrame * CFrame.Angles(math.rad(-90), 0, 0)
-                                    task.wait()
-                                until not _G.TG2 or humanoid.Health < 1   or muRoot.Transparency == 1 
-
-								Target = nil
                    task.wait()
-                end
+                until not _G.TG2
             end)
         end
     })
