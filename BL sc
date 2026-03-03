@@ -100,21 +100,8 @@ do
         _G.AT = Value
         if not _G.AT then
             if _G.AutoClickDropdown == "Click" then
-             local vim = game:GetService("VirtualInputManager")
-
-                local mouseLocation = workspace.CurrentCamera.ViewportSize / 2
-
-                
-             vim:SendMouseButtonEvent(
-            mouseLocation.X,
-            mouseLocation.Y,
-                0,          -- ปุ่ม 0 = Left Click
-                false,       -- true = กดลง
-            game,
-            0
-            ) 
-            end
             return
+            end
         end
 
         
@@ -244,7 +231,7 @@ do
 
             task.spawn(function()
 
-                while _G.TG1 do
+                repeat
                    
                     local character = GetCharacter()
                     local root = character:FindFirstChild("HumanoidRootPart")
@@ -276,6 +263,7 @@ do
                             local humanoid = v:FindFirstChild("Humanoid")
                             
                             if muRoot and humanoid and humanoid.Health > 0 then
+                                
                              local targetCFrame = muRoot.CFrame * CFrame.new(0, 7.1, 0)
                                 root.CFrame = targetCFrame * CFrame.Angles(math.rad(-90), 0, 0)
                                 
@@ -285,7 +273,7 @@ do
                     end
                     
                    task.wait()
-                end
+                until _G.TG1
             end)
 
             
@@ -303,7 +291,7 @@ do
             if not _G.TG3 then return end
 
            task.spawn(function()
-                while  _G.TG3 do
+                repeat
                    
                     local character = GetCharacter()
                     local root = character:FindFirstChild("HumanoidRootPart")
@@ -335,7 +323,7 @@ do
                     end
                     
                    task.wait()
-                end
+                until not _G.TG3
             end)
 
             
@@ -354,7 +342,7 @@ do
             if not _G.TG4 then return end
 
            task.spawn(function()
-            while _G.TG4 do
+            repeat
                    
                     local character = GetCharacter()
                     local root = character:FindFirstChild("HumanoidRootPart")
@@ -376,16 +364,17 @@ do
                             local humanoid = v:FindFirstChild("Humanoid")
                             
                             if muRoot and humanoid and humanoid.Health > 0 then
-                             local targetCFrame = muRoot.CFrame * CFrame.new(0, 7.1, 0)
-                                root.CFrame = targetCFrame * CFrame.Angles(math.rad(-90), 0, 0)
                                 
+                                local targetCFrame = muRoot.CFrame * CFrame.new(0, 7.1, 0)
+                                root.CFrame = targetCFrame * CFrame.Angles(math.rad(-90), 0, 0)
+                              
                                 break
                             end
                         end
                     end
                     
                    task.wait()
-                end
+                until not _G.TG4
             end)
 
             
@@ -406,7 +395,7 @@ do
             if not _G.TG2 then return end
 
             task.spawn(function()
-              while _G.TG2 do
+              repeat
                    
                     local character = GetCharacter()
                     local root = character:FindFirstChild("HumanoidRootPart")
@@ -437,9 +426,55 @@ do
                     end
                     
                    task.wait()
-                end
+                until not _G.TG2
             end)
         end
     })
+
+
+ local npcFolder = game:GetService("ReplicatedStorage").assets.npc_cache
+local Npcs = {}
+
+for _, v in pairs(npcFolder:GetChildren()) do
+    if v:FindFirstChild("HumanoidRootPart") then
+	task.wait()
+        table.insert(Npcs, v.Name)
+    end
+end
+
+local misctab = Section:Tab({
+    Title = "Misc",
+    Icon = "circle-gauge",
+    Locked = false,
+})
+
+misctab:Dropdown({
+    Title = "All Npcs",
+    Desc = "Teleport To",
+    Values = Npcs,
+    Callback = function(option)
+        local npc = npcFolder:FindFirstChild(option)
+
+        if npc and npc:FindFirstChild("HumanoidRootPart") then
+            game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame =
+                npc.HumanoidRootPart.CFrame
+        end
+    end
+})
+misctab:Dropdown({
+    Title = "Raid Npcs",
+    Desc = "Teleport To",
+    Values = {'Avdol','Chumbo','Yoshikage Kira','???'},
+    Callback = function(option)
+        local npc = npcFolder:FindFirstChild(option)
+
+        if npc and npc:FindFirstChild("HumanoidRootPart") then
+            game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame =
+                npc.HumanoidRootPart.CFrame
+        end
+    end
+})
+
+
 
 end
