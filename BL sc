@@ -104,41 +104,41 @@ do
             end
         end
 
-        
 
         while _G.AT do
 
             if _G.AutoClickDropdown == nil then continue end
-
-
+            
             if _G.AutoClickDropdown == "Remote" then
                 local args = {
                 true,
                  false
                 }
-            game:GetService("Players").LocalPlayer.Character:WaitForChild("client_character_controller"):WaitForChild("M1"):FireServer(unpack(args))
+                game:GetService("Players").LocalPlayer.Character:WaitForChild("client_character_controller"):WaitForChild("M1"):FireServer(unpack(args))
             elseif _G.AutoClickDropdown == "Click" then
-                     local vim = game:GetService("VirtualInputManager")
+                local vim = game:GetService("VirtualInputManager")
 
                 local mouseLocation = workspace.CurrentCamera.ViewportSize / 2
 
                 
             vim:SendMouseButtonEvent(
-            0,
-           0,
+                0,
+                0,
                 0,          -- ปุ่ม 0 = Left Click
                 true,       -- true = กดลง
-            game,
-            0
+                game,
+                0
             ) 
+
             task.wait(0.5)
-             vim:SendMouseButtonEvent(
-            0,
-            0,
-                0,          -- ปุ่ม 0 = Left Click
-                false,       -- true = กดลง
-            game,
-            0
+
+            vim:SendMouseButtonEvent(
+                    0,
+                    0,
+                    0,          -- ปุ่ม 0 = Left Click
+                    false,       -- true = กดลง
+                game,
+                0
             ) 
             end
             task.wait()
