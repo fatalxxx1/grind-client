@@ -519,7 +519,7 @@ task.spawn(function()
                     
                     if lastTransparency then
                         
-                        if current > lastTransparency and current > 0.3 then
+                        if current > lastTransparency and current > 0.45 then
                             
                             dodgeRemote:FireServer({
                                 A = false,
