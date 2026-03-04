@@ -438,38 +438,38 @@ do
                         continue 
                     end
 
-                    local TheSelf = workspace.Npcs["The Self"]
+                    local NPC = workspace.Npcs
                     local Metad = workspace:WaitForChild("Npcs"):WaitForChild("Meditation")
-                    if not TheSelf then
-                        continue
-                    end
-                     if not Metad then
+                    if not TheSelf or not Metad then
                         continue
                     end
 
-                    local args = {
-                        workspace:WaitForChild("Npcs"):WaitForChild("Meditation"),
-                        "Meditate."
-                     }
-                    game:GetService("ReplicatedStorage"):WaitForChild("requests"):WaitForChild("character"):WaitForChild("dialogue"):FireServer(unpack(args))
+                  local meditationFound = false
 
-                    wait(4)
+                for _, M in pairs(NPC:GetChildren()) do
+                    if M:IsA("Model") and M.Name == "Meditation" then
+                        game:GetService("ReplicatedStorage"):WaitForChild("requests"):WaitForChild("character"):WaitForChild("dialogue"):FireServer(workspace.Npcs.Meditation, "Meditate.")
+                        wait(4)
+                        meditationFound = true
+                        break
+                    end
+                end
 
-                    for _, v in pairs(TheSelf:GetChildren()) do
-                        if v:IsA('Model') then
-                            if IsMe(v) then
-                                print('found!!!!!!!!!!!!!!!!!!!!')
-                                local args = {
-                                    workspace:WaitForChild("Npcs"):WaitForChild("The Self"),
-                                    "Yes."
-                                }
-                                game:GetService("ReplicatedStorage"):WaitForChild("requests"):WaitForChild("character"):WaitForChild("dialogue"):FireServer(unpack(args))
 
+                    if meditationFound then
+                        for _, v in pairs(TheSelf:GetChildren()) do
+                            if v:IsA("Model") and v.Name == "The Self" then
+                                if IsMe(v) then
+                                    
+
+                                    game:GetService("ReplicatedStorage"):WaitForChild("requests"):WaitForChild("character"):WaitForChild("dialogue"):FireServer(workspace.Npcs["The Self"], "Yes.")
+
+                                    break
+                                end
                             end
                         end
                     end
-
-
+                    wait(2)
                     for _, v in pairs(liveFolder:GetChildren()) do
                         if string.find(v.Name, '.'..player.Name..' entity') then
                             
@@ -492,7 +492,7 @@ do
     })
 
 
- local npcFolder = game:GetService("ReplicatedStorage").assets.npc_cache
+local npcFolder = game:GetService("ReplicatedStorage").assets.npc_cache
 local Npcs = {}
 
 for _, v in pairs(npcFolder:GetChildren()) do
