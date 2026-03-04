@@ -117,7 +117,7 @@ do
                  false
                 }
             game:GetService("Players").LocalPlayer.Character:WaitForChild("client_character_controller"):WaitForChild("M1"):FireServer(unpack(args))
-            else
+            elseif _G.AutoClickDropdown == "Click" then
                      local vim = game:GetService("VirtualInputManager")
 
                 local mouseLocation = workspace.CurrentCamera.ViewportSize / 2
@@ -256,7 +256,6 @@ do
                          or string.find(v.Name, "kuza") 
                          or string.find(v.Name, "Mafia") 
                          or string.find(v.Name, "Leaders") 
-                        or string.find(v.Name, "."..player.Name.."entity clone")
                         or string.find(v.Name, "Kira") then
                             
                              local muRoot = v:FindFirstChild("HumanoidRootPart")
@@ -267,7 +266,7 @@ do
                              local targetCFrame = muRoot.CFrame * CFrame.new(0, 7.1, 0)
                                 root.CFrame = targetCFrame * CFrame.Angles(math.rad(-90), 0, 0)
                                 
-                                break -- Teleport to first enemy found then restart loop
+                            break
                             end
                         end
                     end
@@ -395,6 +394,36 @@ do
             if not _G.TG2 then return end
 
             task.spawn(function()
+
+                local function GetDesc()
+                    local char = GetRoot()
+                    local humanoid = char:WaitForChild('Humanoid')
+
+
+                    return humanoid:GetAppliedDescription()
+
+
+                end
+
+                local function IsMe(Model)
+                    local hum = Model:FindFirstChildOfClass('Humanoid')
+                    if not humanoid then return false end
+
+                    local desc = hum:GetAppliedDescription()
+                    if not then return false end
+                    local myDesc = GetDesc()
+
+                    if desc.Shirt == myDesc.Shirt and desc.Pants == myDesc.Pants and desc.Face == myDesc.Face then
+
+                        return true
+                    end
+                    
+                    return false
+                end
+
+
+
+
               repeat
                    
                     local character = GetCharacter()
@@ -409,7 +438,38 @@ do
                         continue 
                     end
 
-                    
+                    local TheSelf = workspace.Npcs["The Self"]
+                    local Metad = workspace:WaitForChild("Npcs"):WaitForChild("Meditation")
+                    if not TheSelf then
+                        continue
+                    end
+                     if not Metad then
+                        continue
+                    end
+
+                    local args = {
+                        workspace:WaitForChild("Npcs"):WaitForChild("Meditation"),
+                        "Meditate."
+                     }
+                    game:GetService("ReplicatedStorage"):WaitForChild("requests"):WaitForChild("character"):WaitForChild("dialogue"):FireServer(unpack(args))
+
+                    wait(4)
+
+                    for _, v in pairs(TheSelf:GetChildren()) do
+                        if v:IsA('Model') then
+                            if IsMe(v) then
+                                print('found!!!!!!!!!!!!!!!!!!!!')
+                                local args = {
+                                    workspace:WaitForChild("Npcs"):WaitForChild("The Self"),
+                                    "Yes."
+                                }
+                                game:GetService("ReplicatedStorage"):WaitForChild("requests"):WaitForChild("character"):WaitForChild("dialogue"):FireServer(unpack(args))
+
+                            end
+                        end
+                    end
+
+
                     for _, v in pairs(liveFolder:GetChildren()) do
                         if string.find(v.Name, '.'..player.Name..' entity') then
                             
