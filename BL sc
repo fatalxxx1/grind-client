@@ -419,10 +419,10 @@ task.spawn(function()
                 if dodgeRemote then
                     local current = highlight.FillTransparency
                     
-                    if lastTransparency then
+                    
                         
-                        if current > lastTransparency and current > 0.3 then
-                            
+                        if  current > 0.29 then
+
                             dodgeRemote:FireServer({
                                 A = false,
                                 D = false,
@@ -430,7 +430,7 @@ task.spawn(function()
                                 S = false
                             })
                         end
-                    end
+                    
                     
                     lastTransparency = current
                 end
