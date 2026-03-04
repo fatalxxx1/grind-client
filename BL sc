@@ -519,8 +519,7 @@ task.spawn(function()
                     
                     if lastTransparency then
                         
-                        if current > lastTransparency and current > 0.45 then
-                            
+                        if current > lastTransparency and current <= 0.45 then
                             dodgeRemote:FireServer({
                                 A = false,
                                 D = false,
@@ -542,96 +541,71 @@ end)
     })
 
     misctab:Divider()
- local noEffect = misctab:Toggle({
-        Title = "No Effect (Bug Sometiems)",
-        Desc = "Ro Effect and cutscence", 
-        Type = "Checkbox",
-        Value = false,
-
-        Callback = function(Value)
-            _G.NOEFF = Value
-            if not _G.NOEFF  then return end
-
-            task.spawn(function()
-                repeat
-                   
-                    local eff =  workspace.Effects
-                    if eff:Destroy() then
-                        game:GetService("Players").LocalPlayer.PlayerGui.menu.Enabled = true
-                        game:GetService("Players").LocalPlayer.PlayerGui.MainHud.Enabled = true
-
-                    end
-                    
-                   task.wait()
-                until not _G.NOEFF 
-            end)
-        end
-    })
 
      misctab:Divider()
      _G.R = false
      _G.Z = false
      _G.X = false
      _G.C = false
-    -- local skillR = misctab:Toggle({
-    --     Title = "Auto Spam R ",
-    --     Desc = "", 
-    --     Type = "Checkbox",
-    --     Value = false,
+    local skillR = misctab:Toggle({
+        Title = "Auto Spam R ",
+        Desc = "", 
+        Type = "Checkbox",
+        Value = false,
 
-    --     Callback = function(Value)
-    --         _G.R = Value
-    --         if not _G.R then return end
+        Callback = function(Value)
+            _G.R = Value
+            if not _G.R then return end
 
-    --         task.spawn(function()
-    --             repeat
+            task.spawn(function()
+                repeat
                 
                     
-    --                task.wait(0.1)
-    --             until not _G.R
-    --         end)
-    --     end
-    -- })
+                   task.wait(0.1)
+                until not _G.R
+            end)
+        end
+    })
 
 
 
-    -- local skillx = misctab:Toggle({
-    --     Title = "Auto Spam X ",
-    --     Desc = "", 
-    --     Type = "Checkbox",
-    --     Value = false,
+    local skillx = misctab:Toggle({
+        Title = "Auto Spam X ",
+        Desc = "", 
+        Type = "Checkbox",
+        Value = false,
 
-    --     Callback = function(Value)
-    --         _G.X = Value
-    --         if not _G.X then return end
+        Callback = function(Value)
+            _G.X = Value
+            if not _G.X then return end
 
-    --         task.spawn(function()
-    --             repeat
+            task.spawn(function()
+                repeat
                 
                     
-    --                task.wait(0.1)
-    --             until not _G.X
-    --         end)
-    --     end
-    -- })
-    -- local skillc = misctab:Toggle({
-    --     Title = "Auto Spam C ",
-    --     Desc = "", 
-    --     Type = "Checkbox",
-    --     Value = false,
+                   task.wait(0.1)
+                until not _G.X
+            end)
+        end
+    })
+    local skillc = misctab:Toggle({
+        Title = "Auto Spam C ",
+        Desc = "", 
+        Type = "Checkbox",
+        Value = false,
 
-    --     Callback = function(Value)
-    --         _G.C = Value
-    --         if not _G.C then return end
+        Callback = function(Value)
+            _G.C = Value
+            if not _G.C then return end
 
-    --         task.spawn(function()
-    --             repeat
+            task.spawn(function()
+                repeat
                 
                     
-    --                task.wait(0.1)
-    --             until not _G.C
-    --         end)
-    --     end
-    -- })
+                   task.wait(0.1)
+                until not _G.C
+            end)
+        end
+    })
 
 end
