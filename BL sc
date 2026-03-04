@@ -410,7 +410,10 @@ do
                     if not humanoid then return false end
 
                     local desc = hum:GetAppliedDescription()
-                    if not desc then return false end
+                    if not desc then 
+                        return 
+                        false
+                     end
                     local myDesc = GetDesc()
 
                     if desc.Shirt == myDesc.Shirt and desc.Pants == myDesc.Pants and desc.Face == myDesc.Face then
