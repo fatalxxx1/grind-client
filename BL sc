@@ -83,7 +83,7 @@ do
     Title = "Mode",
     Desc = "Remote = Fire Remote Click = Mouseclick",
     Values = { "Remote", "Click" },
-    Value = "",
+    Value = "Remote",
     Callback = function(option) 
         _G.AutoClickDropdown = option
     end
