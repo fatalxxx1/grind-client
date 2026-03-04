@@ -9,6 +9,12 @@ local function GetRoot()
     return char:WaitForChild("HumanoidRootPart")
 end
 
+local function Dist(a,b)
+    local Mag = (a.Position - b.Position).Magnitude
+    return
+end
+
+
 _G.TG = false
 _G.TG1 = false
 _G.TG2 = false
@@ -17,9 +23,11 @@ _G.TG4 = false
 _G.Medat = false
 
 
+_G.RAYA = 250
 _G.AutoClickDropdown = nil
 _G.AT = false
 _G.TT = nil
+_G.NOEFF = false
 
 do
     local WindUI = loadstring(game:HttpGet(
@@ -29,7 +37,7 @@ do
         Title = "Grind Client (Glazed)",
         Icon = "rbxassetid://9009086352",
         Author = "B L",
-        Size = UDim2.fromOffset(1200, 1200),
+        Size = UDim2.fromOffset(600, 340),
         Resizable = false
     })
 
@@ -151,7 +159,7 @@ do
     local Dropdown = Tab1:Dropdown({
     Title = "Dropdown",
     Desc = "Dropdown Description",
-    Values = { "Boxer", "Samurai Master", "Samurai","Prison","tan24"  },
+    Values = { "Boxer", "Samurai Master", "Samurai","Prison","Vampire"  },
     Value = "",
     Callback = function(option) 
         _G.TT = option 
@@ -194,12 +202,12 @@ do
                     
                     for _, v in pairs(liveFolder:GetChildren()) do
                         if string.find(v.Name, _G.TT) then
+                            -- if Dist(Root,v:GetPivot) then
+                                    local muRoot = v:FindFirstChild("HumanoidRootPart")
+                                        local humanoid = v:FindFirstChild("Humanoid")
                             
-                             local muRoot = v:FindFirstChild("HumanoidRootPart")
-                            local humanoid = v:FindFirstChild("Humanoid")
-                            
-                            if muRoot and humanoid and humanoid.Health > 0 then
-                             local targetCFrame = muRoot.CFrame * CFrame.new(0, 7.1, 0)
+                                if muRoot and humanoid and humanoid.Health > 0 then
+                                local targetCFrame = muRoot.CFrame * CFrame.new(0, 7.1, 0)
                                 root.CFrame = targetCFrame * CFrame.Angles(math.rad(-90), 0, 0)
                                 
                                 break -- Teleport to first enemy found then restart loop
@@ -395,9 +403,6 @@ do
 
             task.spawn(function()
 
-
-
-
                 repeat
                    
                     local character = GetCharacter()
@@ -480,6 +485,153 @@ misctab:Dropdown({
     end
 })
 
+    misctab:Divider()
+    
+    _G.Dodge = false
+    local DODGE = misctab:Toggle({
+        Title = "Auto Dodge Kira",
+        Desc = "Whatever just dodge", 
+        Type = "Checkbox",
+        Value = false,
 
+        Callback = function(Value)
+            _G.Dodge = Value
+           
+
+           if not _G.Dodge then return end
+
+task.spawn(function()
+    local lastTransparency = nil
+    
+    while _G.Dodge do
+        local player = game:GetService("Players").LocalPlayer
+        local char = player.Character
+        
+        if char then
+            local highlight = char:FindFirstChildOfClass("Highlight")
+            local controller = char:FindFirstChild("client_character_controller")
+
+            if highlight and controller then
+                local dodgeRemote = controller:FindFirstChild("Dodge")
+
+                if dodgeRemote then
+                    local current = highlight.FillTransparency
+                    
+                    if lastTransparency then
+                        
+                        if current > lastTransparency and current > 0.3 then
+                            
+                            dodgeRemote:FireServer({
+                                A = false,
+                                D = false,
+                                W = true,
+                                S = false
+                            })
+                        end
+                    end
+                    
+                    lastTransparency = current
+                end
+            end
+        end
+        
+        task.wait()
+    end
+end)
+        end
+    })
+
+    misctab:Divider()
+ local noEffect = misctab:Toggle({
+        Title = "No Effect (Bug Sometiems)",
+        Desc = "Ro Effect and cutscence", 
+        Type = "Checkbox",
+        Value = false,
+
+        Callback = function(Value)
+            _G.NOEFF = Value
+            if not _G.NOEFF  then return end
+
+            task.spawn(function()
+                repeat
+                   
+                    local eff =  workspace.Effects
+                    if eff:Destroy() then
+                        game:GetService("Players").LocalPlayer.PlayerGui.menu.Enabled = true
+                        game:GetService("Players").LocalPlayer.PlayerGui.MainHud.Enabled = true
+
+                    end
+                    
+                   task.wait()
+                until not _G.NOEFF 
+            end)
+        end
+    })
+
+     misctab:Divider()
+     _G.R = false
+     _G.Z = false
+     _G.X = false
+     _G.C = false
+    -- local skillR = misctab:Toggle({
+    --     Title = "Auto Spam R ",
+    --     Desc = "", 
+    --     Type = "Checkbox",
+    --     Value = false,
+
+    --     Callback = function(Value)
+    --         _G.R = Value
+    --         if not _G.R then return end
+
+    --         task.spawn(function()
+    --             repeat
+                
+                    
+    --                task.wait(0.1)
+    --             until not _G.R
+    --         end)
+    --     end
+    -- })
+
+
+
+    -- local skillx = misctab:Toggle({
+    --     Title = "Auto Spam X ",
+    --     Desc = "", 
+    --     Type = "Checkbox",
+    --     Value = false,
+
+    --     Callback = function(Value)
+    --         _G.X = Value
+    --         if not _G.X then return end
+
+    --         task.spawn(function()
+    --             repeat
+                
+                    
+    --                task.wait(0.1)
+    --             until not _G.X
+    --         end)
+    --     end
+    -- })
+    -- local skillc = misctab:Toggle({
+    --     Title = "Auto Spam C ",
+    --     Desc = "", 
+    --     Type = "Checkbox",
+    --     Value = false,
+
+    --     Callback = function(Value)
+    --         _G.C = Value
+    --         if not _G.C then return end
+
+    --         task.spawn(function()
+    --             repeat
+                
+                    
+    --                task.wait(0.1)
+    --             until not _G.C
+    --         end)
+    --     end
+    -- })
 
 end
