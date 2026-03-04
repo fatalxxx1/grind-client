@@ -108,7 +108,7 @@ do
         while _G.AT do
 
             if _G.AutoClickDropdown == nil then continue end
-            
+
             if _G.AutoClickDropdown == "Remote" then
                 local args = {
                 true,
@@ -410,7 +410,7 @@ do
                     if not humanoid then return false end
 
                     local desc = hum:GetAppliedDescription()
-                    if not then return false end
+                    if not desc then return false end
                     local myDesc = GetDesc()
 
                     if desc.Shirt == myDesc.Shirt and desc.Pants == myDesc.Pants and desc.Face == myDesc.Face then
