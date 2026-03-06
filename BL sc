@@ -536,6 +536,45 @@ misctab:Dropdown({
     
 
     misctab:Divider()
+local PlayersList = {}
+
+for _, player in pairs(game:GetService("Players"):GetPlayers()) do
+    if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+        table.insert(PlayersList, player.Name)
+    end
+end
+
+local PlayerWWW = misctab:Dropdown({
+    Title = "TP TO Players",
+    Desc = "Teleport To Player",
+    Values = PlayersList,
+    Callback = function(option)
+        local targetPlayer = game:GetService("Players"):FindFirstChild(option)
+
+        if targetPlayer 
+        and targetPlayer.Character 
+        and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
+
+            game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame =
+                targetPlayer.Character.HumanoidRootPart.CFrame
+        end
+    end
+})
+
+local Button = misctab:Button({
+    Title = "Refresh",
+    Desc = "Test Button",
+    Locked = false,
+    Callback = function()
+        for _, player in pairs(game:GetService("Players"):GetPlayers()) do
+    if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+        table.insert(PlayersList, player.Name)
+    end
+end
+    end
+})
+
+misctab:Divider()
  local noEffect = misctab:Toggle({
         Title = "No Effect (Bug Sometiems)",
         Desc = "Ro Effect and cutscence", 
