@@ -226,7 +226,35 @@ do
         Icon = "circle-alert",
         Locked = false
     })
+    
+    _G.Auto = false
+    local Toggle = Raid1:Toggle({
+    Title = "Play Again",
+    Desc = "Play Again When Raid Complete",
+    Icon = "",
+    Type = "Checkbox",
+    Value = false, -- default value
+    Callback = function(state) 
+       _G.Auto = Value
+            if not _G.Auto then return end
 
+            task.spawn(function()
+                repeat
+                    local RC = game:GetService("Players").LocalPlayer.PlayerGui.raidcomplete.raid
+
+                    if RC.Visible == true then
+
+                        game:GetService("ReplicatedStorage"):WaitForChild("requests"):WaitForChild("character"):WaitForChild("retryraid"):FireServer()
+
+
+                    end
+
+                until not _G.Auto
+
+            end)
+    end
+    })
+    Raid1:Divider()
     local togge1 = Raid1:Toggle({
         Title = "Start Raid Kira",
         Desc = "Start AFK",
@@ -540,7 +568,7 @@ local Players = game:GetService("Players")
 local PlayersList = {}
 
 local function GetPlayers()
-    PlayersList = {} -- clear list first
+    PlayersList = {} 
 
     for _, player in pairs(Players:GetPlayers()) do
         if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
@@ -628,14 +656,14 @@ misctab:Divider()
     true
 }
 game:GetService("Players").LocalPlayer.Character:WaitForChild("client_character_controller"):WaitForChild("Skill"):FireServer(unpack(args))
-
+ task.wait(2)
 local args = {
     "R",
     false
 }
 game:GetService("Players").LocalPlayer.Character:WaitForChild("client_character_controller"):WaitForChild("Skill"):FireServer(unpack(args))
                     
-                   task.wait(0.1)
+                   
                 until not _G.R
             end)
         end
@@ -658,14 +686,14 @@ game:GetService("Players").LocalPlayer.Character:WaitForChild("client_character_
     true
 }
 game:GetService("Players").LocalPlayer.Character:WaitForChild("client_character_controller"):WaitForChild("Skill"):FireServer(unpack(args))
-
+ task.wait(2)
 local args = {
     "Z",
     false
 }
 game:GetService("Players").LocalPlayer.Character:WaitForChild("client_character_controller"):WaitForChild("Skill"):FireServer(unpack(args))
                     
-                   task.wait(0.1)
+                   
                 until not _G.Z
             end)
         end
@@ -688,7 +716,7 @@ game:GetService("Players").LocalPlayer.Character:WaitForChild("client_character_
     true
 }
 game:GetService("Players").LocalPlayer.Character:WaitForChild("client_character_controller"):WaitForChild("Skill"):FireServer(unpack(args))
-
+ task.wait(2)
 local args = {
     "X",
     false
@@ -696,7 +724,7 @@ local args = {
 game:GetService("Players").LocalPlayer.Character:WaitForChild("client_character_controller"):WaitForChild("Skill"):FireServer(unpack(args))
                     
                     
-                   task.wait(0.1)
+                   
                 until not _G.X
             end)
         end
@@ -718,7 +746,7 @@ game:GetService("Players").LocalPlayer.Character:WaitForChild("client_character_
     true
 }
 game:GetService("Players").LocalPlayer.Character:WaitForChild("client_character_controller"):WaitForChild("Skill"):FireServer(unpack(args))
-
+ task.wait(2)
 local args = {
     "C",
     false
@@ -726,7 +754,7 @@ local args = {
 game:GetService("Players").LocalPlayer.Character:WaitForChild("client_character_controller"):WaitForChild("Skill"):FireServer(unpack(args))
                     
                     
-                   task.wait(0.1)
+                  
                 until not _G.C
             end)
         end
@@ -750,7 +778,7 @@ game:GetService("Players").LocalPlayer.Character:WaitForChild("client_character_
     true
 }
 game:GetService("Players").LocalPlayer.Character:WaitForChild("client_character_controller"):WaitForChild("Skill"):FireServer(unpack(args))
-
+ task.wait(2)
 local args = {
     "V",
     false
@@ -758,7 +786,7 @@ local args = {
 game:GetService("Players").LocalPlayer.Character:WaitForChild("client_character_controller"):WaitForChild("Skill"):FireServer(unpack(args))
                     
                     
-                   task.wait(0.1)
+                  
                 until not _G.V
             end)
         end
