@@ -610,65 +610,159 @@ misctab:Divider()
      _G.Z = false
      _G.X = false
      _G.C = false
-    -- local skillR = misctab:Toggle({
-    --     Title = "Auto Spam R ",
-    --     Desc = "", 
-    --     Type = "Checkbox",
-    --     Value = false,
+      _G.Z = false
+    local skillR = misctab:Toggle({
+        Title = "Auto Spam R ",
+        Desc = "", 
+        Type = "Checkbox",
+        Value = false,
 
-    --     Callback = function(Value)
-    --         _G.R = Value
-    --         if not _G.R then return end
+        Callback = function(Value)
+            _G.R = Value
+            if not _G.R then return end
 
-    --         task.spawn(function()
-    --             repeat
-                
+            task.spawn(function()
+                repeat
+                    local args = {
+    "R",
+    true
+}
+game:GetService("Players").LocalPlayer.Character:WaitForChild("client_character_controller"):WaitForChild("Skill"):FireServer(unpack(args))
+
+local args = {
+    "R",
+    false
+}
+game:GetService("Players").LocalPlayer.Character:WaitForChild("client_character_controller"):WaitForChild("Skill"):FireServer(unpack(args))
                     
-    --                task.wait(0.1)
-    --             until not _G.R
-    --         end)
-    --     end
-    -- })
+                   task.wait(0.1)
+                until not _G.R
+            end)
+        end
+    })
 
+        local skillZ = misctab:Toggle({
+        Title = "Auto Spam Z ",
+        Desc = "", 
+        Type = "Checkbox",
+        Value = false,
 
+        Callback = function(Value)
+            _G.Z = Value
+            if not _G.Z then return end
 
-    -- local skillx = misctab:Toggle({
-    --     Title = "Auto Spam X ",
-    --     Desc = "", 
-    --     Type = "Checkbox",
-    --     Value = false,
+            task.spawn(function()
+                repeat
+                    local args = {
+    "Z",
+    true
+}
+game:GetService("Players").LocalPlayer.Character:WaitForChild("client_character_controller"):WaitForChild("Skill"):FireServer(unpack(args))
 
-    --     Callback = function(Value)
-    --         _G.X = Value
-    --         if not _G.X then return end
-
-    --         task.spawn(function()
-    --             repeat
-                
+local args = {
+    "Z",
+    false
+}
+game:GetService("Players").LocalPlayer.Character:WaitForChild("client_character_controller"):WaitForChild("Skill"):FireServer(unpack(args))
                     
-    --                task.wait(0.1)
-    --             until not _G.X
-    --         end)
-    --     end
-    -- })
-    -- local skillc = misctab:Toggle({
-    --     Title = "Auto Spam C ",
-    --     Desc = "", 
-    --     Type = "Checkbox",
-    --     Value = false,
+                   task.wait(0.1)
+                until not _G.Z
+            end)
+        end
+    })
 
-    --     Callback = function(Value)
-    --         _G.C = Value
-    --         if not _G.C then return end
+    local skillX = misctab:Toggle({
+        Title = "Auto Spam X ",
+        Desc = "", 
+        Type = "Checkbox",
+        Value = false,
 
-    --         task.spawn(function()
-    --             repeat
-                
+        Callback = function(Value)
+            _G.X = Value
+            if not _G.X then return end
+
+            task.spawn(function()
+                repeat
+                                        local args = {
+    "X",
+    true
+}
+game:GetService("Players").LocalPlayer.Character:WaitForChild("client_character_controller"):WaitForChild("Skill"):FireServer(unpack(args))
+
+local args = {
+    "X",
+    false
+}
+game:GetService("Players").LocalPlayer.Character:WaitForChild("client_character_controller"):WaitForChild("Skill"):FireServer(unpack(args))
                     
-    --                task.wait(0.1)
-    --             until not _G.C
-    --         end)
-    --     end
-    -- })
+                    
+                   task.wait(0.1)
+                until not _G.X
+            end)
+        end
+    })
+    local skillC = misctab:Toggle({
+        Title = "Auto Spam C ",
+        Desc = "", 
+        Type = "Checkbox",
+        Value = false,
+
+        Callback = function(Value)
+            _G.C = Value
+            if not _G.C then return end
+
+            task.spawn(function()
+                repeat
+                                            local args = {
+    "C",
+    true
+}
+game:GetService("Players").LocalPlayer.Character:WaitForChild("client_character_controller"):WaitForChild("Skill"):FireServer(unpack(args))
+
+local args = {
+    "C",
+    false
+}
+game:GetService("Players").LocalPlayer.Character:WaitForChild("client_character_controller"):WaitForChild("Skill"):FireServer(unpack(args))
+                    
+                    
+                   task.wait(0.1)
+                until not _G.C
+            end)
+        end
+    })
+
+
+   local skillV = misctab:Toggle({
+        Title = "Auto Spam v ",
+        Desc = "", 
+        Type = "Checkbox",
+        Value = false,
+
+        Callback = function(Value)
+            _G.V = Value
+            if not _G.V then return end
+
+            task.spawn(function()
+                repeat
+                                            local args = {
+    "V",
+    true
+}
+game:GetService("Players").LocalPlayer.Character:WaitForChild("client_character_controller"):WaitForChild("Skill"):FireServer(unpack(args))
+
+local args = {
+    "V",
+    false
+}
+game:GetService("Players").LocalPlayer.Character:WaitForChild("client_character_controller"):WaitForChild("Skill"):FireServer(unpack(args))
+                    
+                    
+                   task.wait(0.1)
+                until not _G.V
+            end)
+        end
+    })
+
 
 end
