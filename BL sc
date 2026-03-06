@@ -536,26 +536,33 @@ misctab:Dropdown({
     
 
     misctab:Divider()
+local Players = game:GetService("Players")
 local PlayersList = {}
 
-for _, player in pairs(game:GetService("Players"):GetPlayers()) do
-    if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-        table.insert(PlayersList, player.Name)
+local function GetPlayers()
+    PlayersList = {} -- clear list first
+
+    for _, player in pairs(Players:GetPlayers()) do
+        if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            table.insert(PlayersList, player.Name)
+        end
     end
+
+    return PlayersList
 end
 
 local PlayerWWW = misctab:Dropdown({
     Title = "TP TO Players",
     Desc = "Teleport To Player",
-    Values = PlayersList,
+    Values = GetPlayers(),
     Callback = function(option)
-        local targetPlayer = game:GetService("Players"):FindFirstChild(option)
+        local targetPlayer = Players:FindFirstChild(option)
 
-        if targetPlayer 
-        and targetPlayer.Character 
+        if targetPlayer
+        and targetPlayer.Character
         and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
 
-            game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame =
+            Players.LocalPlayer.Character.HumanoidRootPart.CFrame =
                 targetPlayer.Character.HumanoidRootPart.CFrame
         end
     end
@@ -563,14 +570,11 @@ local PlayerWWW = misctab:Dropdown({
 
 local Button = misctab:Button({
     Title = "Refresh",
-    Desc = "Test Button",
+    Desc = "Refresh Player List",
     Locked = false,
     Callback = function()
-        for _, player in pairs(game:GetService("Players"):GetPlayers()) do
-    if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-        table.insert(PlayersList, player.Name)
-    end
-end
+        local newList = GetPlayers()
+        PlayerWWW:SetValues(newList) -- update dropdown values
     end
 })
 
