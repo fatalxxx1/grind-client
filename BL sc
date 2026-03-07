@@ -14,6 +14,7 @@ local function Dist(a,b)
     return
 end
 
+_G.State = 'None'
 
 _G.TG = false
 _G.TG1 = false
@@ -112,6 +113,7 @@ do
             end
         end
 
+       
 
         while _G.AT do
 
@@ -268,7 +270,7 @@ do
             task.spawn(function()
 
                 repeat
-                   
+                   if _G.State then
                     local character = GetCharacter()
                     local root = character:FindFirstChild("HumanoidRootPart")
                     
@@ -292,7 +294,9 @@ do
                          or string.find(v.Name, "kuza") 
                          or string.find(v.Name, "Mafia") 
                          or string.find(v.Name, "Leaders") 
-                        or string.find(v.Name, "Kira") then
+                        or string.find(v.Name, "Kira") or string.find(v.Name, "Zombie")
+                        or string.find(v.Name, "Vampire")
+                        or string.find(v.Name, "DIO") or string.find(v.Name, "Kujo")then
                             
                              local muRoot = v:FindFirstChild("HumanoidRootPart")
                             local humanoid = v:FindFirstChild("Humanoid")
@@ -306,7 +310,7 @@ do
                             end
                         end
                     end
-                    
+                    end
                    task.wait()
                 until not _G.TG1
             end)
@@ -315,106 +319,6 @@ do
         end
     })
 
-     local togge2 = Raid1:Toggle({
-        Title = "Start Raid Dio",
-        Desc = "Start AFK",
-        Type = "Checkbox",
-        Value = false,
-
-        Callback = function(Value)
-            _G.TG3 = Value
-            if not _G.TG3 then return end
-
-           task.spawn(function()
-                repeat
-                   
-                    local character = GetCharacter()
-                    local root = character:FindFirstChild("HumanoidRootPart")
-                    
-                    if not root then
-                        task.wait()
-                        continue
-                    end
-
-                    local liveFolder = workspace:FindFirstChild("Live")
-                    if not liveFolder then 
-                        continue 
-                    end
-                    
-                    for _, v in pairs(liveFolder:GetChildren()) do
-                        if string.find(v.Name, "Zombie")
-                        or string.find(v.Name, "Vampire")
-                        or string.find(v.Name, "DIO") then
-                            
-                            local muRoot = v:FindFirstChild("HumanoidRootPart")
-                            local humanoid = v:FindFirstChild("Humanoid")
-                            
-                            if muRoot and humanoid and humanoid.Health > 0 then
-                             local targetCFrame = muRoot.CFrame * CFrame.new(0, 7.1, 0)
-                                root.CFrame = targetCFrame * CFrame.Angles(math.rad(-90), 0, 0)
-                                break
-                            end
-                        end
-                    end
-                    
-                   task.wait()
-                until not _G.TG3
-            end)
-
-            
-        end
-    })
-
-
-    local togge3 = Raid1:Toggle({
-        Title = "Start Raid Kujo",
-        Desc = "Start AFK",
-        Type = "Checkbox",
-        Value = false,
-
-        Callback = function(Value)
-            _G.TG4 = Value
-            if not _G.TG4 then return end
-
-           task.spawn(function()
-            repeat
-                   
-                    local character = GetCharacter()
-                    local root = character:FindFirstChild("HumanoidRootPart")
-                    
-                    if not root then
-                        continue
-                    end
-
-                    local liveFolder = workspace:FindFirstChild("Live")
-                    if not liveFolder then 
-                        continue 
-                    end
-
-                    
-                    for _, v in pairs(liveFolder:GetChildren()) do
-                        if string.find(v.Name, "Kujo") then
-                            
-                             local muRoot = v:FindFirstChild("HumanoidRootPart")
-                            local humanoid = v:FindFirstChild("Humanoid")
-                            
-                            if muRoot and humanoid and humanoid.Health > 0 then
-                                
-                                local targetCFrame = muRoot.CFrame * CFrame.new(0, 7.1, 0)
-                                root.CFrame = targetCFrame * CFrame.Angles(math.rad(-90), 0, 0)
-                              
-                                break
-                            end
-                        end
-                    end
-                    
-                   task.wait()
-                until not _G.TG4
-            end)
-
-            
-        end
-    })
     Raid1:Divider()
     
     _G.Dodge = false
@@ -490,11 +394,15 @@ end)
                     end
 
                     local liveFolder = workspace:FindFirstChild("Live")
-                    if not liveFolder then 
-                        
-                   task.wait()
+                    local metad = workspace.Npcs:FindFirstChild("Meditation")
+           
+                    if not liveFolder  then 
+                        task.wait()
                         continue 
+
                     end
+                    
+
 
                     for _, v in pairs(liveFolder:GetChildren()) do
                         if string.find(v.Name, '.'..player.Name..' entity') then
@@ -516,6 +424,66 @@ end)
             end)
         end
     })
+
+
+local worldEtab = Section:Tab({
+    Title = "World Events",
+    Icon = "earth",
+    Locked = false,
+})
+
+_G.WorldE = false
+local WorldT = worldEtab:Toggle({
+    Title = "Auto World Event",
+    Desc = "",
+    Icon = "",
+    Type = "Checkbox",
+    Value = false, -- default value
+    Callback = function(state) 
+           _G.WorldE = Value
+            if not _G.WorldE then return end
+
+            task.spawn(function()
+
+                
+
+            end)
+    end
+})
+
+local shoptab = Section:Tab({
+    Title = "Shop",
+    Icon = "store",
+    Locked = false,
+})
+
+local Presshop = shoptab:Button({
+    Title = "Prestige Shop",
+    Desc = "",
+    Locked = false,
+    Callback = function()
+        game:GetService("Players").LocalPlayer.PlayerGui["Prestige Shop"].prestige_shop.Visible = true
+    end
+})
+
+local Raidshop = shoptab:Button({
+    Title = "Raid Shop",
+    Desc = "",
+    Locked = false,
+    Callback = function()
+        game:GetService("Players").LocalPlayer.PlayerGui["Raid Shop"].raid_shop.Visible = true
+    end
+})
+
+local  Ganghop = shoptab:Button({
+    Title = "Gang Shop",
+    Desc = "",
+    Locked = false,
+    Callback = function()
+ game:GetService("Players").LocalPlayer.PlayerGui["Gang Shop"].gang_shopend.Visible = true
+    end
+})
+
 
 
 local npcFolder = game:GetService("ReplicatedStorage").assets.npc_cache
@@ -547,6 +515,7 @@ misctab:Dropdown({
         end
     end
 })
+
 misctab:Dropdown({
     Title = "Raid Npcs",
     Desc = "Teleport To",
@@ -564,6 +533,7 @@ misctab:Dropdown({
     
 
     misctab:Divider()
+
 local Players = game:GetService("Players")
 local PlayersList = {}
 
@@ -602,7 +572,7 @@ local Button = misctab:Button({
     Locked = false,
     Callback = function()
         local newList = GetPlayers()
-        PlayerWWW:SetValues(newList) -- update dropdown values
+        PlayerWWW:Refresh(newList) 
     end
 })
 
