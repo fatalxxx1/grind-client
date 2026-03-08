@@ -181,7 +181,6 @@ do
             for i,v in pairs( game:GetService("Players").LocalPlayer.PlayerGui:GetChildren()) do
 	                if v:IsA("ScreenGui") and v.Name == 'Main Menu' then  
 		              v:Destroy()
-                      wait(1)
 					  game:GetService("ReplicatedStorage"):WaitForChild("requests"):WaitForChild("character"):WaitForChild("spawn"):FireServer()   
                  break
 	            end
@@ -427,8 +426,12 @@ local Toggle = misctab:Toggle({
                         
                         local Holer = stands.Holder.C
                         if Holer.GroupTransparency == 1 then
-                                GetCharacter():WaitForChild("client_character_controller"):WaitForChild("SummonStand"):FireServer()
-                        end
+                                local ER = GetCharacter():WaitForChild("client_character_controller")
+                            if ER then
+                                ER:WaitForChild("SummonStand"):FireServer()
+                            end
+                        
+                            end
                 task.wait()
                 end
         
@@ -489,7 +492,7 @@ misctab:Divider()
         Title = "Auto Spam R ",
         Desc = "", 
         Type = "Checkbox",
-        Value = true,
+        Value = false,
 
         Callback = function(Value)
             _G.R = Value
@@ -519,7 +522,7 @@ game:GetService("Players").LocalPlayer.Character:WaitForChild("client_character_
         Title = "Auto Spam Z ",
         Desc = "", 
         Type = "Checkbox",
-        Value = true,
+        Value = false,
 
         Callback = function(Value)
             _G.Z = Value
@@ -549,7 +552,7 @@ game:GetService("Players").LocalPlayer.Character:WaitForChild("client_character_
         Title = "Auto Spam X ",
         Desc = "", 
         Type = "Checkbox",
-        Value = true,
+        Value = false,
 
         Callback = function(Value)
             _G.X = Value
@@ -579,7 +582,7 @@ game:GetService("Players").LocalPlayer.Character:WaitForChild("client_character_
         Title = "Auto Spam C ",
         Desc = "", 
         Type = "Checkbox",
-        Value = true,
+        Value = false,
 
         Callback = function(Value)
             _G.C = Value
@@ -611,7 +614,7 @@ game:GetService("Players").LocalPlayer.Character:WaitForChild("client_character_
         Title = "Auto Spam v ",
         Desc = "", 
         Type = "Checkbox",
-        Value = true,
+        Value = false,
 
         Callback = function(Value)
             _G.V = Value
