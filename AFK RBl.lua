@@ -1,3 +1,6 @@
+repeat task.wait() until game:IsLoaded()
+
+
 local player = game.Players.LocalPlayer
 
 local function GetCharacter()
@@ -505,13 +508,13 @@ misctab:Divider()
     "R",
     true
 }
-game:GetService("Players").LocalPlayer.Character:WaitForChild("client_character_controller"):WaitForChild("Skill"):FireServer(unpack(args))
+GetCharacter():WaitForChild("client_character_controller"):WaitForChild("Skill"):FireServer(unpack(args))
  task.wait(2)
 local args = {
     "R",
     false
 }
-game:GetService("Players").LocalPlayer.Character:WaitForChild("client_character_controller"):WaitForChild("Skill"):FireServer(unpack(args))
+GetCharacter():WaitForChild("client_character_controller"):WaitForChild("Skill"):FireServer(unpack(args))
                     
                    
                 until not _G.R
@@ -535,13 +538,13 @@ game:GetService("Players").LocalPlayer.Character:WaitForChild("client_character_
     "Z",
     true
 }
-game:GetService("Players").LocalPlayer.Character:WaitForChild("client_character_controller"):WaitForChild("Skill"):FireServer(unpack(args))
+GetCharacter():WaitForChild("client_character_controller"):WaitForChild("Skill"):FireServer(unpack(args))
  task.wait(2)
 local args = {
     "Z",
     false
 }
-game:GetService("Players").LocalPlayer.Character:WaitForChild("client_character_controller"):WaitForChild("Skill"):FireServer(unpack(args))
+GetCharacter():WaitForChild("client_character_controller"):WaitForChild("Skill"):FireServer(unpack(args))
                     
                    
                 until not _G.Z
@@ -565,13 +568,13 @@ game:GetService("Players").LocalPlayer.Character:WaitForChild("client_character_
     "X",
     true
 }
-game:GetService("Players").LocalPlayer.Character:WaitForChild("client_character_controller"):WaitForChild("Skill"):FireServer(unpack(args))
+GetCharacter():WaitForChild("client_character_controller"):WaitForChild("Skill"):FireServer(unpack(args))
  task.wait(2)
 local args = {
     "X",
     false
 }
-game:GetService("Players").LocalPlayer.Character:WaitForChild("client_character_controller"):WaitForChild("Skill"):FireServer(unpack(args))
+GetCharacter():WaitForChild("client_character_controller"):WaitForChild("Skill"):FireServer(unpack(args))
                     
                     
                    
@@ -595,13 +598,13 @@ game:GetService("Players").LocalPlayer.Character:WaitForChild("client_character_
     "C",
     true
 }
-game:GetService("Players").LocalPlayer.Character:WaitForChild("client_character_controller"):WaitForChild("Skill"):FireServer(unpack(args))
+GetCharacter():WaitForChild("client_character_controller"):WaitForChild("Skill"):FireServer(unpack(args))
  task.wait(2)
 local args = {
     "C",
     false
 }
-game:GetService("Players").LocalPlayer.Character:WaitForChild("client_character_controller"):WaitForChild("Skill"):FireServer(unpack(args))
+GetCharacter():WaitForChild("client_character_controller"):WaitForChild("Skill"):FireServer(unpack(args))
                     
                     
                   
@@ -627,13 +630,13 @@ game:GetService("Players").LocalPlayer.Character:WaitForChild("client_character_
     "V",
     true
 }
-game:GetService("Players").LocalPlayer.Character:WaitForChild("client_character_controller"):WaitForChild("Skill"):FireServer(unpack(args))
+GetCharacter():WaitForChild("client_character_controller"):WaitForChild("Skill"):FireServer(unpack(args))
  task.wait(2)
 local args = {
     "V",
     false
 }
-game:GetService("Players").LocalPlayer.Character:WaitForChild("client_character_controller"):WaitForChild("Skill"):FireServer(unpack(args))
+GetCharacter():WaitForChild("client_character_controller"):WaitForChild("Skill"):FireServer(unpack(args))
                     
                     
                   
