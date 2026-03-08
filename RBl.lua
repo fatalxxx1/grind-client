@@ -424,7 +424,7 @@ local Toggle = misctab:Toggle({
         
                         local stands = gui:FindFirstChild("Stand Skills")
                         
-                        local Holer = stands.Holder.C
+                        local Holer = stands:FindFirstChild("Holder").C
                         if Holer.GroupTransparency == 1 then
                                 local ER = GetCharacter():WaitForChild("client_character_controller")
                             if ER then
