@@ -1,0 +1,578 @@
+local player = game.Players.LocalPlayer
+
+local function GetCharacter()
+    return player.Character or player.CharacterAdded:Wait()
+end
+
+local function GetRoot()
+    local char = GetCharacter()
+    return char:WaitForChild("HumanoidRootPart")
+end
+
+local function Dist(p1, p2)
+    return (p1 - p2).Magnitude
+end
+_G.State = 'None'
+
+_G.TG = false
+_G.TG1 = false
+_G.TG2 = false
+_G.TG3 = false
+_G.TG4 = false
+_G.Medat = false
+
+
+_G.RAYA = 100
+_G.AutoClickDropdown = nil
+_G.AT = false
+_G.TT = nil
+_G.NOEFF = false
+
+do
+    local WindUI = loadstring(game:HttpGet(
+        "https://github.com/Footagesus/WindUI/releases/latest/download/main.lua"))()
+
+    local Window = WindUI:CreateWindow({
+        Title = "Grind Client (Glazed)",
+        Icon = "rbxassetid://9009086352",
+        Author = "B L",
+        Size = UDim2.fromOffset(600, 340),
+        Resizable = false
+    })
+
+    Window:Tag({
+        Title = "Beta",
+        Icon = "github",
+        Color = Color3.fromHex("#30ff6a"),
+        Radius = 0
+    })
+
+    Window:Divider()
+    Window:DisableTopbarButtons({"Fullscreen"})
+
+    Window:EditOpenButton({
+        CornerRadius = UDim.new(0, 16),
+        StrokeThickness = 0,
+        OnlyMobile = false,
+        Enabled = true,
+        Draggable = false
+    })
+
+    local Section = Window:Section({
+        Title = "Main",
+        Icon = "chart-bar",
+        Opened = true
+    })
+
+    local info1 = Section:Tab({
+        Title = "Info",
+        Icon = "badge-info",
+        Locked = false
+    })
+
+    info1:Select()
+
+    info1:Paragraph({
+        Title = "Warning",
+        Desc = "all of farm functions is blatant. \nuse at your own RISK",
+        Color = "Red"
+    })
+
+
+    info1:Divider()
+
+    local Tab1 = Section:Tab({
+        Title = "Farm",
+        Icon = "hamburger",
+        Locked = false
+    })
+        local AutoClickDP = Tab1:Dropdown({
+    Title = "Mode",
+    Desc = "Remote = Fire Remote Click = Mouseclick",
+    Values = { "Remote", "Click" },
+    Value = "Remote",
+    Callback = function(option) 
+        _G.AutoClickDropdown = option
+    end
+    })
+
+
+    local autoTG = Tab1:Toggle({
+    Title = "Auto Click",
+    Desc = "Yed Hee Mair Mung 6656",
+    Icon = "",
+    Type = "Checkbox",
+    Value = true, -- 
+    Callback = function(Value) 
+        _G.AT = Value
+        if not _G.AT then
+            if _G.AutoClickDropdown == "Click" then
+            return
+            end
+        end
+        while _G.AT do
+
+          
+
+            if _G.AutoClickDropdown == nil then continue end
+
+            if _G.AutoClickDropdown == "Remote" then
+                local args = {
+                true,
+                 false
+                }
+                local M1 = GetCharacter():WaitForChild("client_character_controller"):WaitForChild("M1")
+                if M1 then
+                    M1:FireServer(unpack(args))
+                end
+                
+                
+            elseif _G.AutoClickDropdown == "Click" then
+                local vim = game:GetService("VirtualInputManager")
+
+                local mouseLocation = workspace.CurrentCamera.ViewportSize / 2
+
+                
+            vim:SendMouseButtonEvent(
+                0,
+                0,
+                0,          -- ปุ่ม 0 = Left Click
+                true,       -- true = กดลง
+                game,
+                0
+            ) 
+
+            task.wait(0.5)
+
+            vim:SendMouseButtonEvent(
+                    0,
+                    0,
+                    0,          -- ปุ่ม 0 = Left Click
+                    false,       -- true = กดลง
+                game,
+                0
+            ) 
+            end
+
+            task.wait()
+        end
+
+
+    end
+    })
+
+
+    _G.AutoPlay = false
+
+    local AutoPlay = Tab1:Toggle({
+    Title = "Auto Play",
+    Desc = "",
+    Icon = "",
+    Type = "Checkbox",
+    Value = true, -- default value
+    Callback = function(state) 
+          _G.AutoPlay = state
+           if not _G.AutoPlay then
+                return
+            end
+        while _G.AutoPlay do
+           
+
+            for i,v in pairs( game:GetService("Players").LocalPlayer.PlayerGui:GetChildren()) do
+	                if v:IsA("ScreenGui") and v.Name == 'Main Menu' then  
+		              v:Destroy()
+					  game:GetService("ReplicatedStorage"):WaitForChild("requests"):WaitForChild("character"):WaitForChild("spawn"):FireServer()   
+                 break
+	            end
+
+            end
+
+           
+
+            task.wait(0.5)
+        end
+    end
+    })
+    AutoPlay:Set(true)
+
+
+
+
+
+     Tab1:Divider()
+     local Raid1 = Section:Tab({
+        Title = "Raid",
+        Icon = "circle-alert",
+        Locked = false
+    })
+    
+
+    _G.Auto = true
+
+   local AGainT = Raid1:Toggle({
+    Title = "Play Again",
+    Desc = "Play Again When Raid Complete",
+    Icon = "",
+    Type = "Checkbox",
+    Value = true,
+    Callback = function(state)
+
+        _G.Auto = state
+        if not _G.Auto then return end
+
+        task.spawn(function()
+            repeat
+                local RC = game:GetService("Players")
+                    .LocalPlayer.PlayerGui:FindFirstChild("raidcomplete")
+
+                if RC then
+                    game:GetService("ReplicatedStorage")
+                        :WaitForChild("requests")
+                        :WaitForChild("character")
+                        :WaitForChild("retryraid")
+                        :FireServer()
+                end
+
+                task.wait(1) -- prevent lag
+            until not _G.Auto
+        end)
+
+    end
+})
+
+    AGainT:Set(true)
+
+    Raid1:Divider()
+    local togge1 = Raid1:Toggle({
+        Title = "Start Raid",
+        Desc = "Start AFK",
+        Type = "Checkbox",
+        Value = false,
+
+        Callback = function(Value)
+            _G.TG1 = Value
+            if not _G.TG1 then return end
+
+            task.spawn(function()
+
+                repeat
+                   if _G.State then
+                    local character = GetCharacter()
+                    local root = character:FindFirstChild("HumanoidRootPart")
+                    
+                    if not root then
+                        task.wait()
+                        continue
+                    end
+
+                    local liveFolder = workspace:FindFirstChild("Live")
+                    if not liveFolder then 
+                        continue 
+                    end
+
+                    
+                    for _, v in pairs(liveFolder:GetChildren()) do
+                        if string.find(v.Name, "Samurai")
+                        or string.find(v.Name, "Cyborg")
+                        or string.find(v.Name, "Zombie")
+                        or string.find(v.Name, "Prison")
+                        or string.find(v.Name, "Police")
+                        or string.find(v.Name, "elite") 
+                         or string.find(v.Name, "kuza") 
+                         or string.find(v.Name, "Mafia") 
+                         or string.find(v.Name, "Leaders") 
+                        or string.find(v.Name, "Kira") or string.find(v.Name, "Zombie")
+                        or string.find(v.Name, "Vampire")
+                        or string.find(v.Name, "DIO") or string.find(v.Name, "Kujo")then
+                            
+                             local muRoot = v:FindFirstChild("HumanoidRootPart")
+                            local humanoid = v:FindFirstChild("Humanoid")
+                            
+                            if muRoot and humanoid and humanoid.Health > 0 then
+                                
+                             local targetCFrame = muRoot.CFrame * CFrame.new(0, 7.1, 0)
+                                root.CFrame = targetCFrame * CFrame.Angles(math.rad(-90), 0, 0)
+                                
+                            break
+                            end
+                        end
+                    end
+                    end
+                   task.wait()
+                until not _G.TG1
+            end)
+
+            
+        end
+    })
+    togge1:Set(true)
+    Raid1:Divider()
+    
+
+    Tab1:Divider()
+
+
+
+
+local shoptab = Section:Tab({
+    Title = "Shop",
+    Icon = "store",
+    Locked = false,
+})
+
+local Presshop = shoptab:Button({
+    Title = "Prestige Shop",
+    Desc = "",
+    Locked = false,
+    Callback = function()
+        game:GetService("Players").LocalPlayer.PlayerGui["Prestige Shop"].prestige_shop.Visible = true
+    end
+})
+
+local Raidshop = shoptab:Button({
+    Title = "Raid Shop",
+    Desc = "",
+    Locked = false,
+    Callback = function()
+        game:GetService("Players").LocalPlayer.PlayerGui["Raid Shop"].raid_shop.Visible = true
+    end
+})
+
+local  Ganghop = shoptab:Button({
+    Title = "Gang Shop",
+    Desc = "",
+    Locked = false,
+    Callback = function()
+ game:GetService("Players").LocalPlayer.PlayerGui["Gang Shop"].gang_shopend.Visible = true
+    end
+})
+
+local  CashShop = shoptab:Button({
+    Title = "Cash Shop",
+    Desc = "",
+    Locked = false,
+    Callback = function()
+ game:GetService("Players").LocalPlayer.PlayerGui["Cash Shop"].cash_shop.Visible = true
+    end
+})
+
+
+local misctab = Section:Tab({
+    Title = "Misc",
+    Icon = "circle-gauge",
+    Locked = false,
+})
+
+
+local Button = misctab:Button({
+    Title = "Refresh",
+    Desc = "Refresh Player List",
+    Locked = false,
+    Callback = function()
+        local newList = GetPlayers()
+        PlayerWWW:Refresh(newList) 
+    end
+})
+
+misctab:Divider()
+ local noEffect = misctab:Toggle({
+    Title = "No Effect (Bug Sometimes)",
+    Desc = "Remove Effect and cutscene",
+    Type = "Checkbox",
+    Value = false,
+
+    Callback = function(Value)
+        _G.NOEFF = Value
+        if not _G.NOEFF then return end
+
+        task.spawn(function()
+            local player = game:GetService("Players").LocalPlayer
+            local gui = player.PlayerGui
+
+            repeat
+                local eff = workspace:FindFirstChild("Effects")
+
+                if eff then
+                    eff:Destroy()
+                else
+                    if gui:FindFirstChild("Stand Skills") then
+                        gui["Stand Skills"].Enabled = true
+                    end
+                    if gui:FindFirstChild("Inventory") then
+                        gui.Inventory.Enabled = true
+                    end
+                    if gui:FindFirstChild("menu") then
+                        gui.menu.Enabled = true
+                    end
+                    if gui:FindFirstChild("MainHud") then
+                        gui.MainHud.Enabled = true
+                    end
+                end
+
+                task.wait(0.5)
+            until not _G.NOEFF
+        end)
+    end
+})
+
+     misctab:Divider()
+     _G.R = false
+     _G.Z = false
+     _G.X = false
+     _G.C = false
+      _G.Z = false
+    local skillR = misctab:Toggle({
+        Title = "Auto Spam R ",
+        Desc = "", 
+        Type = "Checkbox",
+        Value = false,
+
+        Callback = function(Value)
+            _G.R = Value
+            if not _G.R then return end
+
+            task.spawn(function()
+                repeat
+                    local args = {
+    "R",
+    true
+}
+game:GetService("Players").LocalPlayer.Character:WaitForChild("client_character_controller"):WaitForChild("Skill"):FireServer(unpack(args))
+ task.wait(2)
+local args = {
+    "R",
+    false
+}
+game:GetService("Players").LocalPlayer.Character:WaitForChild("client_character_controller"):WaitForChild("Skill"):FireServer(unpack(args))
+                    
+                   
+                until not _G.R
+            end)
+        end
+    })
+
+        local skillZ = misctab:Toggle({
+        Title = "Auto Spam Z ",
+        Desc = "", 
+        Type = "Checkbox",
+        Value = false,
+
+        Callback = function(Value)
+            _G.Z = Value
+            if not _G.Z then return end
+
+            task.spawn(function()
+                repeat
+                    local args = {
+    "Z",
+    true
+}
+game:GetService("Players").LocalPlayer.Character:WaitForChild("client_character_controller"):WaitForChild("Skill"):FireServer(unpack(args))
+ task.wait(2)
+local args = {
+    "Z",
+    false
+}
+game:GetService("Players").LocalPlayer.Character:WaitForChild("client_character_controller"):WaitForChild("Skill"):FireServer(unpack(args))
+                    
+                   
+                until not _G.Z
+            end)
+        end
+    })
+
+    local skillX = misctab:Toggle({
+        Title = "Auto Spam X ",
+        Desc = "", 
+        Type = "Checkbox",
+        Value = false,
+
+        Callback = function(Value)
+            _G.X = Value
+            if not _G.X then return end
+
+            task.spawn(function()
+                repeat
+                                        local args = {
+    "X",
+    true
+}
+game:GetService("Players").LocalPlayer.Character:WaitForChild("client_character_controller"):WaitForChild("Skill"):FireServer(unpack(args))
+ task.wait(2)
+local args = {
+    "X",
+    false
+}
+game:GetService("Players").LocalPlayer.Character:WaitForChild("client_character_controller"):WaitForChild("Skill"):FireServer(unpack(args))
+                    
+                    
+                   
+                until not _G.X
+            end)
+        end
+    })
+    local skillC = misctab:Toggle({
+        Title = "Auto Spam C ",
+        Desc = "", 
+        Type = "Checkbox",
+        Value = false,
+
+        Callback = function(Value)
+            _G.C = Value
+            if not _G.C then return end
+
+            task.spawn(function()
+                repeat
+                                            local args = {
+    "C",
+    true
+}
+game:GetService("Players").LocalPlayer.Character:WaitForChild("client_character_controller"):WaitForChild("Skill"):FireServer(unpack(args))
+ task.wait(2)
+local args = {
+    "C",
+    false
+}
+game:GetService("Players").LocalPlayer.Character:WaitForChild("client_character_controller"):WaitForChild("Skill"):FireServer(unpack(args))
+                    
+                    
+                  
+                until not _G.C
+            end)
+        end
+    })
+
+
+   local skillV = misctab:Toggle({
+        Title = "Auto Spam v ",
+        Desc = "", 
+        Type = "Checkbox",
+        Value = false,
+
+        Callback = function(Value)
+            _G.V = Value
+            if not _G.V then return end
+
+            task.spawn(function()
+                repeat
+                                            local args = {
+    "V",
+    true
+}
+game:GetService("Players").LocalPlayer.Character:WaitForChild("client_character_controller"):WaitForChild("Skill"):FireServer(unpack(args))
+ task.wait(2)
+local args = {
+    "V",
+    false
+}
+game:GetService("Players").LocalPlayer.Character:WaitForChild("client_character_controller"):WaitForChild("Skill"):FireServer(unpack(args))
+                    
+                    
+                  
+                until not _G.V
+            end)
+        end
+    })
+
+
+end
