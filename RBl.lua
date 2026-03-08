@@ -489,7 +489,7 @@ misctab:Divider()
         Title = "Auto Spam R ",
         Desc = "", 
         Type = "Checkbox",
-        Value = false,
+        Value = true,
 
         Callback = function(Value)
             _G.R = Value
@@ -519,7 +519,7 @@ game:GetService("Players").LocalPlayer.Character:WaitForChild("client_character_
         Title = "Auto Spam Z ",
         Desc = "", 
         Type = "Checkbox",
-        Value = false,
+        Value = true,
 
         Callback = function(Value)
             _G.Z = Value
@@ -549,7 +549,7 @@ game:GetService("Players").LocalPlayer.Character:WaitForChild("client_character_
         Title = "Auto Spam X ",
         Desc = "", 
         Type = "Checkbox",
-        Value = false,
+        Value = true,
 
         Callback = function(Value)
             _G.X = Value
@@ -579,7 +579,7 @@ game:GetService("Players").LocalPlayer.Character:WaitForChild("client_character_
         Title = "Auto Spam C ",
         Desc = "", 
         Type = "Checkbox",
-        Value = false,
+        Value = true,
 
         Callback = function(Value)
             _G.C = Value
@@ -611,7 +611,7 @@ game:GetService("Players").LocalPlayer.Character:WaitForChild("client_character_
         Title = "Auto Spam v ",
         Desc = "", 
         Type = "Checkbox",
-        Value = false,
+        Value = true,
 
         Callback = function(Value)
             _G.V = Value
