@@ -181,20 +181,17 @@ do
             for i,v in pairs( game:GetService("Players").LocalPlayer.PlayerGui:GetChildren()) do
 	                if v:IsA("ScreenGui") and v.Name == 'Main Menu' then  
 		              v:Destroy()
+                      wait(1)
 					  game:GetService("ReplicatedStorage"):WaitForChild("requests"):WaitForChild("character"):WaitForChild("spawn"):FireServer()   
                  break
 	            end
 
             end
-
-           
-
             task.wait(0.5)
         end
     end
     })
     AutoPlay:Set(true)
-
 
 
 
@@ -308,8 +305,56 @@ do
     togge1:Set(true)
     Raid1:Divider()
     
+    _G.Dodge = false
+    local DODGE = Raid1:Toggle({
+        Title = "Auto Dodge Kira Bomb",
+        Desc = "NOT 100% Perefect Dodge ", 
+        Type = "Checkbox",
+        Value = false,
 
+        Callback = function(Value)
+            _G.Dodge = Value
+           
+
+           if not _G.Dodge then return end
+
+task.spawn(function()
+    
+    
+    while _G.Dodge do
+    local player = game:GetService("Players").LocalPlayer
+    local char = player.Character
+
+    if char then
+        local controller = char:FindFirstChild("client_character_controller")
+        local root = char:FindFirstChild("HumanoidRootPart")
+
+        if controller and root then
+            local sound = root:FindFirstChild("Primary Bomb Detonate")
+            local dodgeRemote = controller:FindFirstChild("Dodge")
+
+            if sound and dodgeRemote then
+                if sound.Playing then
+                    task.wait(0.2)
+                    dodgeRemote:FireServer({
+                        A = false,
+                        D = false,
+                        W = true,
+                        S = false
+                    })
+                end
+            end
+        end
+    end
+
+    task.wait()
+end
+end)
+        end
+    })
     Tab1:Divider()
+
+
 
 
 
@@ -356,21 +401,40 @@ local  CashShop = shoptab:Button({
     end
 })
 
-
 local misctab = Section:Tab({
     Title = "Misc",
     Icon = "circle-gauge",
     Locked = false,
 })
 
+_G.SS = true
+local Toggle = misctab:Toggle({
+    Title = "Summon  Stand",
+    Desc = "auto stand",
+    Icon = "",
+    Type = "Checkbox",
+    Value = true, -- default value
+    Callback = function(value) 
+       _G.SS = value
+       if not _G.SS then return end
+        task.spawn(function()
+                local player = game:GetService("Players").LocalPlayer
+                local gui = player.PlayerGui
 
-local Button = misctab:Button({
-    Title = "Refresh",
-    Desc = "Refresh Player List",
-    Locked = false,
-    Callback = function()
-        local newList = GetPlayers()
-        PlayerWWW:Refresh(newList) 
+                while _G.SS do
+        
+                        local stands = gui:FindFirstChild("Stand Skills")
+                        
+                        local Holer = stands.Holder.C
+                        if Holer.GroupTransparency == 1 then
+                                GetCharacter():WaitForChild("client_character_controller"):WaitForChild("SummonStand"):FireServer()
+                        end
+                task.wait()
+                end
+        
+        
+        end)
+       
     end
 })
 
