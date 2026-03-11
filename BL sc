@@ -467,8 +467,20 @@ end)
 
                     end
                     
-
-
+                    if metad then
+                        local args = {
+                             workspace:WaitForChild("Npcs"):WaitForChild("Meditation"),
+                                "Meditate."
+                                }
+                        game:GetService("ReplicatedStorage"):WaitForChild("requests"):WaitForChild("character"):WaitForChild("dialogue"):FireServer(unpack(args))
+                                wait(5)
+                                local args = {
+    workspace:WaitForChild("Npcs"):WaitForChild("The Self"),
+    "Yes."
+}
+game:GetService("ReplicatedStorage"):WaitForChild("requests"):WaitForChild("character"):WaitForChild("dialogue"):FireServer(unpack(args))
+                    end
+                    
                     for _, v in pairs(liveFolder:GetChildren()) do
                         if string.find(v.Name, '.'..player.Name..' entity') then
                             
