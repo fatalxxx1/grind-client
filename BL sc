@@ -1,4 +1,22 @@
+_G.Load = false
 local player = game.Players.LocalPlayer
+repeat 
+    local Map = workspace:WaitForChild('Map')
+
+    for _, folder in pairs(Map:GetChildren()) do
+        if  string.find(folder.Name, "Kujo") or 
+        string.find(folder.Name, "DIO") or string.find(folder.Name, "Kira") or string.find(folder.Name, "Avdol") then
+            _G.Load = true
+            break
+        end
+
+    end
+    
+    task.wait() 
+
+
+until game:IsLoaded() and _G.Load
+
 
 local function GetCharacter()
     return player.Character or player.CharacterAdded:Wait()
@@ -178,7 +196,7 @@ do
         while _G.AutoPlay do
            
 
-            for i,v in pairs( game:GetService("Players").LocalPlayer.PlayerGui:GetChildren()) do
+            for i,v in pairs(player.PlayerGui:GetChildren()) do
 	                if v:IsA("ScreenGui") and v.Name == 'Main Menu' then  
 		              v:Destroy()
 					  game:GetService("ReplicatedStorage"):WaitForChild("requests"):WaitForChild("character"):WaitForChild("spawn"):FireServer()   
@@ -186,96 +204,14 @@ do
 	            end
 
             end
-
-           
-
             task.wait(0.5)
         end
     end
     })
+    AutoPlay:Set(true)
 
 
 
-    Tab1:Divider()
-
-    local SEMOB = Tab1:Dropdown({
-    Title = "Select Mob",
-    Desc = "Dropdown Description",
-    Values = { "Boxer", "Samurai Master", "Samurai","Prison","Vampire"  },
-    Value = "",
-    Callback = function(option) 
-        _G.TT = option 
-    end
-    })
-
-    local TPDistance = Tab1:Slider({
-    Title = "TP Distance",
-    Desc = "tp when near mob spawn",
-    
-    
-    Step = 1,
-    Value = {
-        Min = 10,
-        Max = 500,
-        Default = 100,
-    },
-    Callback = function(value)
-        _G.RAYA = value
-    end
-})
-
-
-
-    local toggle = Tab1:Toggle({
-        Title = "Start ",
-        Desc = "Start farm selected",
-        Type = "Checkbox",
-        Value = false,
-
-        Callback = function(Value)
-            _G.TG = Value
-            if not _G.TG then 
-                return 
-            end
-
-            task.spawn(function()
-                while _G.TG do
-                     local character = GetCharacter()
-                    local root = character:FindFirstChild("HumanoidRootPart")
-                    
-                    if not root then
-                        continue
-                    end
-
-                    local liveFolder = workspace:FindFirstChild("Live")
-                    if not liveFolder then 
-                        continue 
-                    end
-                    if not _G.TT then
-                        task.wait()
-                        continue
-                    end
-                    
-                    for _, v in pairs(liveFolder:GetChildren()) do
-                        if string.find(v.Name, _G.TT) then
-                            if Dist(root.Position,v.HumanoidRootPart.Position) <= _G.RAYA  then
-                                    local muRoot = v:FindFirstChild("HumanoidRootPart")
-                                        local humanoid = v:FindFirstChild("Humanoid")
-                            
-                                if muRoot and humanoid and humanoid.Health > 0 then
-                                    local targetCFrame = muRoot.CFrame * CFrame.new(0, 7.1, 0)
-                                    root.CFrame = targetCFrame * CFrame.Angles(math.rad(-90), 0, 0)
-                                
-                                    break -- Teleport to first enemy found then restart loop
-                                end
-                            end
-                        end
-                    end
-                    task.wait()
-                end
-            end)
-        end
-    })
 
      Tab1:Divider()
      local Raid1 = Section:Tab({
@@ -300,8 +236,7 @@ do
 
         task.spawn(function()
             repeat
-                local RC = game:GetService("Players")
-                    .LocalPlayer.PlayerGui:FindFirstChild("raidcomplete")
+                local RC = player.PlayerGui:FindFirstChild("raidcomplete")
 
                 if RC then
                     game:GetService("ReplicatedStorage")
@@ -318,7 +253,7 @@ do
     end
 })
 
-   
+    AGainT:Set(true)
 
     Raid1:Divider()
     local togge1 = Raid1:Toggle({
@@ -383,7 +318,7 @@ do
             
         end
     })
-    
+    togge1:Set(true)
     Raid1:Divider()
     
     _G.Dodge = false
@@ -403,12 +338,11 @@ task.spawn(function()
     
     
     while _G.Dodge do
-    local player = game:GetService("Players").LocalPlayer
-    local char = player.Character
+
 
     if char then
-        local controller = char:FindFirstChild("client_character_controller")
-        local root = char:FindFirstChild("HumanoidRootPart")
+        local controller = GetRoot():FindFirstChild("client_character_controller")
+        local root = GetRoot():FindFirstChild("HumanoidRootPart")
 
         if controller and root then
             local sound = root:FindFirstChild("Primary Bomb Detonate")
@@ -436,85 +370,9 @@ end)
     Tab1:Divider()
 
 
-    local togge1 = Tab1:Toggle({
-        Title = "Start kys",
-        Desc = "Start kys at meditation", 
-        Type = "Checkbox",
-        Value = false,
-
-        Callback = function(Value)
-            _G.TG2 = Value
-            if not _G.TG2 then return end
-
-            task.spawn(function()
-
-                repeat
-                   
-                    local character = GetCharacter()
-                    local root = character:FindFirstChild("HumanoidRootPart")
-                    
-                    if not root then
-                        task.wait()
-                        continue
-                    end
-
-                    local liveFolder = workspace:FindFirstChild("Live")
-                    local metad = workspace.Npcs:FindFirstChild("Meditation")
-           
-                    if not liveFolder  then 
-                        task.wait()
-                        continue 
-
-                    end
-                    
 
 
-                    for _, v in pairs(liveFolder:GetChildren()) do
-                        if string.find(v.Name, '.'..player.Name..' entity') then
-                            
-                             local muRoot = v:FindFirstChild("HumanoidRootPart")
-                            local humanoid = v:FindFirstChild("Humanoid")
-                            
-                            if muRoot and humanoid and humanoid.Health > 0 then
-                             local targetCFrame = muRoot.CFrame * CFrame.new(0, 7.1, 0)
-                                root.CFrame = targetCFrame * CFrame.Angles(math.rad(-90), 0, 0)
-                                
-                                break
-                            end
-                        end
-                    end
-                    
-                   task.wait()
-                until not _G.TG2
-            end)
-        end
-    })
 
-
-local worldEtab = Section:Tab({
-    Title = "World Events",
-    Icon = "earth",
-    Locked = false,
-})
-
-_G.WorldE = false
-local WorldT = worldEtab:Toggle({
-    Title = "Auto World Event",
-    Desc = "",
-    Icon = "",
-    Type = "Checkbox",
-    Value = false, -- default value
-    Callback = function(state) 
-           _G.WorldE = Value
-            if not _G.WorldE then return end
-
-            task.spawn(function()
-
-                
-
-            end)
-    end
-})
 
 local shoptab = Section:Tab({
     Title = "Shop",
@@ -527,7 +385,7 @@ local Presshop = shoptab:Button({
     Desc = "",
     Locked = false,
     Callback = function()
-        game:GetService("Players").LocalPlayer.PlayerGui["Prestige Shop"].prestige_shop.Visible = true
+        player.PlayerGui["Prestige Shop"].prestige_shop.Visible = true
     end
 })
 
@@ -536,7 +394,7 @@ local Raidshop = shoptab:Button({
     Desc = "",
     Locked = false,
     Callback = function()
-        game:GetService("Players").LocalPlayer.PlayerGui["Raid Shop"].raid_shop.Visible = true
+        player.PlayerGui["Raid Shop"].raid_shop.Visible = true
     end
 })
 
@@ -545,7 +403,7 @@ local  Ganghop = shoptab:Button({
     Desc = "",
     Locked = false,
     Callback = function()
- game:GetService("Players").LocalPlayer.PlayerGui["Gang Shop"].gang_shopend.Visible = true
+        player.PlayerGui["Gang Shop"].gang_shopend.Visible = true
     end
 })
 
@@ -554,20 +412,9 @@ local  CashShop = shoptab:Button({
     Desc = "",
     Locked = false,
     Callback = function()
- game:GetService("Players").LocalPlayer.PlayerGui["Cash Shop"].cash_shop.Visible = true
+        player.PlayerGui["Cash Shop"].cash_shop.Visible = true
     end
 })
-
-
-local npcFolder = game:GetService("ReplicatedStorage").assets.npc_cache
-local Npcs = {}
-
-for _, v in pairs(npcFolder:GetChildren()) do
-    if v:FindFirstChild("HumanoidRootPart") then
-	task.wait()
-        table.insert(Npcs, v.Name)
-    end
-end
 
 local misctab = Section:Tab({
     Title = "Misc",
@@ -586,21 +433,25 @@ local Toggle = misctab:Toggle({
        _G.SS = value
        if not _G.SS then return end
         task.spawn(function()
-                local player = game:GetService("Players").LocalPlayer
                 local gui = player.PlayerGui
 
                 while _G.SS do
         
                         local stands = gui:FindFirstChild("Stand Skills")
-                        
-                        local Holer = stands:FindFirstChild("Holder").C
+                        local menu = gui:FindFirstChild("Main Menu")
+                        if stands then
+                        local Holer = stands.Holder.C
+                        if not menu then
                         if Holer.GroupTransparency == 1 then
                                 local ER = GetCharacter():WaitForChild("client_character_controller")
                             if ER then
+                                wait(1)
                                 ER:WaitForChild("SummonStand"):FireServer()
                             end
                         
                             end
+                        end
+                    end
                 task.wait()
                 end
         
@@ -610,93 +461,18 @@ local Toggle = misctab:Toggle({
     end
 })
 
-misctab:Dropdown({
-    Title = "All Npcs",
-    Desc = "Teleport To",
-    Values = Npcs,
-    Callback = function(option)
-        local npc = npcFolder:FindFirstChild(option)
-
-        if npc and npc:FindFirstChild("HumanoidRootPart") then
-            game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame =
-                npc.HumanoidRootPart.CFrame
-        end
-    end
-})
-
-misctab:Dropdown({
-    Title = "Raid Npcs",
-    Desc = "Teleport To",
-    Values = {'Avdol','Chumbo','Yoshikage Kira','???'},
-    Callback = function(option)
-        local npc = npcFolder:FindFirstChild(option)
-
-        if npc and npc:FindFirstChild("HumanoidRootPart") then
-            game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame =
-                npc.HumanoidRootPart.CFrame
-        end
-    end
-})
-
-    
-
-    misctab:Divider()
-
-    local Players = game:GetService("Players")
-    local PlayersList = {}
-
-    local function GetPlayers()
-    PlayersList = {} 
-
-    for _, player in pairs(Players:GetPlayers()) do
-        if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-            table.insert(PlayersList, player.Name)
-        end
-    end
-
-    return PlayersList
-    end
-
-    local PlayerWWW = misctab:Dropdown({
-    Title = "TP TO Players",
-    Desc = "Teleport To Player",
-    Values = GetPlayers(),
-    Callback = function(option)
-        local targetPlayer = Players:FindFirstChild(option)
-
-        if targetPlayer
-        and targetPlayer.Character
-        and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
-
-            Players.LocalPlayer.Character.HumanoidRootPart.CFrame =
-                targetPlayer.Character.HumanoidRootPart.CFrame
-        end
-    end
-})
-
-local Button = misctab:Button({
-    Title = "Refresh",
-    Desc = "Refresh Player List",
-    Locked = false,
-    Callback = function()
-        local newList = GetPlayers()
-        PlayerWWW:Refresh(newList) 
-    end
-})
-
 misctab:Divider()
  local noEffect = misctab:Toggle({
     Title = "No Effect (Bug Sometimes)",
     Desc = "Remove Effect and cutscene",
     Type = "Checkbox",
-    Value = false,
+    Value = true,
 
     Callback = function(Value)
         _G.NOEFF = Value
         if not _G.NOEFF then return end
 
         task.spawn(function()
-            local player = game:GetService("Players").LocalPlayer
             local gui = player.PlayerGui
 
             repeat
@@ -724,8 +500,41 @@ misctab:Divider()
         end)
     end
 })
-
+    local function useskill(loc,bool)
+         local char = GetCharacter()
+        if char then
+            local args = {
+            loc,
+            bool
+            }
+            char:WaitForChild("client_character_controller"):WaitForChild("Skill"):FireServer(unpack(args))
+        end
+    end
+    
      misctab:Divider()
+    _G.DGR = false
+    local DGameR = misctab:Toggle({
+    Title = "Game Render ",
+    Desc = "",
+    Icon = "",
+    Type = "Checkbox",
+    Value = true, 
+    Callback = function(Value) 
+         _G.DGR = Value
+         if not _G.DGR then
+            game:GetService("RunService"):Set3dRenderingEnabled(false)
+            return
+         end
+
+        task.spawn(function()
+            if _G.DGR then
+                game:GetService("RunService"):Set3dRenderingEnabled(true)
+            end
+        end)
+    end
+    })
+
+
      _G.R = false
      _G.Z = false
      _G.X = false
@@ -735,7 +544,7 @@ misctab:Divider()
         Title = "Auto Spam R ",
         Desc = "", 
         Type = "Checkbox",
-        Value = false,
+        Value = true,
 
         Callback = function(Value)
             _G.R = Value
@@ -743,19 +552,9 @@ misctab:Divider()
 
             task.spawn(function()
                 repeat
-                    local args = {
-    "R",
-    true
-}
-game:GetService("Players").LocalPlayer.Character:WaitForChild("client_character_controller"):WaitForChild("Skill"):FireServer(unpack(args))
- task.wait(2)
-local args = {
-    "R",
-    false
-}
-game:GetService("Players").LocalPlayer.Character:WaitForChild("client_character_controller"):WaitForChild("Skill"):FireServer(unpack(args))
-                    
-                   
+                    useskill('R',true)
+                   useskill('R',false)
+                    task.wait()
                 until not _G.R
             end)
         end
@@ -765,7 +564,7 @@ game:GetService("Players").LocalPlayer.Character:WaitForChild("client_character_
         Title = "Auto Spam Z ",
         Desc = "", 
         Type = "Checkbox",
-        Value = false,
+        Value = true,
 
         Callback = function(Value)
             _G.Z = Value
@@ -773,19 +572,9 @@ game:GetService("Players").LocalPlayer.Character:WaitForChild("client_character_
 
             task.spawn(function()
                 repeat
-                    local args = {
-    "Z",
-    true
-}
-game:GetService("Players").LocalPlayer.Character:WaitForChild("client_character_controller"):WaitForChild("Skill"):FireServer(unpack(args))
- task.wait(2)
-local args = {
-    "Z",
-    false
-}
-game:GetService("Players").LocalPlayer.Character:WaitForChild("client_character_controller"):WaitForChild("Skill"):FireServer(unpack(args))
-                    
-                   
+                  useskill('Z',true)
+                   useskill('Z',false)
+                    task.wait()
                 until not _G.Z
             end)
         end
@@ -795,7 +584,7 @@ game:GetService("Players").LocalPlayer.Character:WaitForChild("client_character_
         Title = "Auto Spam X ",
         Desc = "", 
         Type = "Checkbox",
-        Value = false,
+        Value = true,
 
         Callback = function(Value)
             _G.X = Value
@@ -803,20 +592,9 @@ game:GetService("Players").LocalPlayer.Character:WaitForChild("client_character_
 
             task.spawn(function()
                 repeat
-                                        local args = {
-    "X",
-    true
-}
-game:GetService("Players").LocalPlayer.Character:WaitForChild("client_character_controller"):WaitForChild("Skill"):FireServer(unpack(args))
- task.wait(2)
-local args = {
-    "X",
-    false
-}
-game:GetService("Players").LocalPlayer.Character:WaitForChild("client_character_controller"):WaitForChild("Skill"):FireServer(unpack(args))
-                    
-                    
-                   
+                useskill('X',true)
+                   useskill('X',false)
+                    task.wait()
                 until not _G.X
             end)
         end
@@ -825,7 +603,7 @@ game:GetService("Players").LocalPlayer.Character:WaitForChild("client_character_
         Title = "Auto Spam C ",
         Desc = "", 
         Type = "Checkbox",
-        Value = false,
+        Value = true,
 
         Callback = function(Value)
             _G.C = Value
@@ -833,20 +611,10 @@ game:GetService("Players").LocalPlayer.Character:WaitForChild("client_character_
 
             task.spawn(function()
                 repeat
-                                            local args = {
-    "C",
-    true
-}
-game:GetService("Players").LocalPlayer.Character:WaitForChild("client_character_controller"):WaitForChild("Skill"):FireServer(unpack(args))
- task.wait(2)
-local args = {
-    "C",
-    false
-}
-game:GetService("Players").LocalPlayer.Character:WaitForChild("client_character_controller"):WaitForChild("Skill"):FireServer(unpack(args))
-                    
-                    
-                  
+           
+                   useskill('C',true)
+                   useskill('C',false)
+                    task.wait()
                 until not _G.C
             end)
         end
@@ -857,7 +625,7 @@ game:GetService("Players").LocalPlayer.Character:WaitForChild("client_character_
         Title = "Auto Spam v ",
         Desc = "", 
         Type = "Checkbox",
-        Value = false,
+        Value = true,
 
         Callback = function(Value)
             _G.V = Value
@@ -865,20 +633,10 @@ game:GetService("Players").LocalPlayer.Character:WaitForChild("client_character_
 
             task.spawn(function()
                 repeat
-                                            local args = {
-    "V",
-    true
-}
-game:GetService("Players").LocalPlayer.Character:WaitForChild("client_character_controller"):WaitForChild("Skill"):FireServer(unpack(args))
- task.wait(2)
-local args = {
-    "V",
-    false
-}
-game:GetService("Players").LocalPlayer.Character:WaitForChild("client_character_controller"):WaitForChild("Skill"):FireServer(unpack(args))
+                    useskill('V',true)
+                   useskill('V',false)
                     
-                    
-                  
+                  task.wait()
                 until not _G.V
             end)
         end
