@@ -1,858 +1,728 @@
-repeat task.wait() until game:IsLoaded()
+local OwlLib = {Content = {}};
+local config = {};
 
-local player = game.Players.LocalPlayer
+local placeID = tostring(game.PlaceId);
+local httpService = game:GetService("HttpService");
 
-local function GetCharacter()
-    return player.Character or player.CharacterAdded:Wait()
-end
+pcall(function()
+    config = httpService:JSONDecode(readfile(placeID .. ".txt"));
+end);
 
-local function GetRoot()
-    local char = GetCharacter()
-    return char:WaitForChild("HumanoidRootPart")
-end
+local function saveConfig()
+    writefile(placeID .. ".txt", httpService:JSONEncode(config));
+end;
 
-local function Dist(p1, p2)
-    return (p1 - p2).Magnitude
-end
-_G.State = 'None'
+local oldScript = script;
+local popupGui = game:GetObjects("rbxassetid://4743303040")[1];
+popupGui.Parent = game:GetService("CoreGui");
+popupGui.Name = httpService:GenerateGUID(false);
+script = popupGui.mainScript;
+local popup = loadstring(popupGui.mainScript.Source)();
+script = oldScript;
 
-_G.TG = false
-_G.TG1 = false
-_G.TG2 = false
-_G.TG3 = false
-_G.TG4 = false
-_G.Medat = false
+local owlLibGui = game:GetObjects("rbxassetid://4530443679")[1];
+owlLibGui.Parent = game:GetService("CoreGui");
+owlLibGui.Name = httpService:GenerateGUID(false);
+local mainFrame = owlLibGui.mainFrame;
 
+local tweenService = game:GetService("TweenService");
+local inputService = game:GetService("UserInputService");
 
-_G.RAYA = 100
-_G.AutoClickDropdown = nil
-_G.AT = false
-_G.TT = nil
-_G.NOEFF = false
+local firstBodyFrame;
+local startPos;
+local dragging = false;
+local draggableInput;
+local draggableStart;
 
-do
-    local WindUI = loadstring(game:HttpGet(
-        "https://github.com/Footagesus/WindUI/releases/latest/download/main.lua"))()
+local mouse = game:GetService("Players").LocalPlayer:GetMouse();
+local clamp = math.clamp;
+local floor = math.floor;
+local fromHSV = Color3.fromHSV;
+local fromRGB = Color3.fromRGB;
+local newUDim2 = UDim2.new;
 
-    local Window = WindUI:CreateWindow({
-        Title = "Grind Client (Glazed)",
-        Icon = "rbxassetid://9009086352",
-        Author = "B L",
-        Size = UDim2.fromOffset(600, 340),
-        Resizable = false
-    })
+mainFrame.topBarFrame.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true;
+        draggableStart = input.Position;
+        startPos = mainFrame.AbsolutePosition;
+    end;
+end);
 
-    Window:Tag({
-        Title = "Beta",
-        Icon = "github",
-        Color = Color3.fromHex("#30ff6a"),
-        Radius = 0
-    })
+mainFrame.topBarFrame.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = false;
+    end;
+end);
 
-    Window:Divider()
-    Window:DisableTopbarButtons({"Fullscreen"})
+inputService.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement and dragging then
+        mainFrame.Position = newUDim2(0, startPos.X + (input.Position.X - draggableStart.X), 0, startPos.Y + (input.Position.Y - draggableStart.Y));
+    end;
+end);
 
-    Window:EditOpenButton({
-        CornerRadius = UDim.new(0, 16),
-        StrokeThickness = 0,
-        OnlyMobile = false,
-        Enabled = true,
-        Draggable = false
-    })
+local exitTween = tweenService:Create(mainFrame.topBarFrame.exitBtn, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {ImageTransparency = 0});
+local exitTween1 = tweenService:Create(mainFrame.topBarFrame.exitBtn, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {ImageTransparency = 0.2});
+local miniTween = tweenService:Create(mainFrame.topBarFrame.miniBtn, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {ImageTransparency = 0});
+local miniTween2 = tweenService:Create(mainFrame.topBarFrame.miniBtn, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {ImageTransparency = 0.2});
 
-    local Section = Window:Section({
-        Title = "Main",
-        Icon = "chart-bar",
-        Opened = true
-    })
+mainFrame.topBarFrame.exitBtn.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement then
+        exitTween:Play();
+    end;
+end);
 
-    local info1 = Section:Tab({
-        Title = "Info",
-        Icon = "badge-info",
-        Locked = false
-    })
+mainFrame.topBarFrame.exitBtn.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement then
+        exitTween1:Play();
+    end;
+end);
 
-    info1:Select()
+mainFrame.topBarFrame.exitBtn.MouseButton1Click:Connect(function()
+    mainFrame:TweenSize(newUDim2(0, 387, 0, 27), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.25);
+    wait(0.25);
+    mainFrame.topBarFrame:TweenSize(newUDim2(0, 0, 0, 27), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.25);
+    mainFrame:TweenSize(newUDim2(0, 0, 0, 27), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.25);
+    wait(0.25);
+    owlLibGui:Destroy();
+end);
 
-    info1:Paragraph({
-        Title = "Warning",
-        Desc = "all of farm functions is blatant. \nuse at your own RISK",
-        Color = "Red"
-    })
+mainFrame.topBarFrame.miniBtn.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement then
+        miniTween:Play();
+    end;
+end);
 
+mainFrame.topBarFrame.miniBtn.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement then
+        miniTween2:Play();
+    end;
+end);
 
-    info1:Divider()
+mainFrame.topBarFrame.miniBtn.MouseButton1Click:Connect(function()
+    if mainFrame.Size ~= newUDim2(0, 387, 0, 27) then
+        mainFrame:TweenSize(newUDim2(0, 387, 0, 27), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.25, true);
+    else
+        mainFrame:TweenSize(newUDim2(0, 387, 0, 225), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.25, true);
+    end;
+end);
 
-    local Tab1 = Section:Tab({
-        Title = "Farm",
-        Icon = "hamburger",
-        Locked = false
-    })
-        local AutoClickDP = Tab1:Dropdown({
-    Title = "Mode",
-    Desc = "Remote = Fire Remote Click = Mouseclick",
-    Values = { "Remote", "Click" },
-    Value = "Remote",
-    Callback = function(option) 
-        _G.AutoClickDropdown = option
-    end
-    })
+inputService.InputBegan:Connect(function(input, onGui)
+    if not onGui and (input.KeyCode == Enum.KeyCode.P or input.KeyCode == Enum.KeyCode.RightShift) then
+        owlLibGui.Enabled = not owlLibGui.Enabled;
+    end;
+end);
 
+function OwlLib:SetCategory() end;
 
-   local autoTG = Tab1:Toggle({
-    Title = "Auto Click",
-    Desc = "Yed Hee Mair Mung 6656",
-    Icon = "",
-    Type = "Checkbox",
-    Value = true, -- 
-    Callback = function(Value) 
-        _G.AT = Value
-        if not _G.AT then
-            if _G.AutoClickDropdown == "Click" then
-            return
-            end
-        end
-        while _G.AT do
+function OwlLib.Content:Resize(scrollingFrame)
+    scrollingFrame.CanvasSize = newUDim2(0, 0, 0, (#scrollingFrame:GetChildren() - 1) * 36);
+end;
 
-          
+function OwlLib.Content:Ripple(btn)
+    spawn(function()
+		local rippleEffect = Instance.new("ImageLabel", btn);
+		local rippleEffectInner = Instance.new("ImageLabel", rippleEffect);
+		rippleEffect.Name = "rippleEffect";
+		rippleEffect.BackgroundTransparency = 1;
+		rippleEffect.BorderSizePixel = 0;
+		rippleEffect.Image = "rbxassetid://2708891598";
+		rippleEffect.ImageColor3 = fromRGB(244, 244, 244);
+		rippleEffect.ImageTransparency = 0.7;
+		rippleEffect.ScaleType = Enum.ScaleType.Fit;
+		rippleEffectInner.Name = "rippleEffect";
+		rippleEffectInner.AnchorPoint = Vector2.new(0.5, 0.5);
+		rippleEffectInner.BackgroundTransparency = 1;
+		rippleEffectInner.BorderSizePixel = 0;
+		rippleEffectInner.Position = newUDim2(0.5, 0, 0.5, 0);
+		rippleEffectInner.Size = newUDim2(0.93, 0, 0.93, 0);
+		rippleEffectInner.Image = "rbxassetid://2708891598";
+		rippleEffectInner.ImageColor3 = fromRGB(45, 45, 45);
+		rippleEffectInner.ImageTransparency = 0.7;
+		rippleEffectInner.ScaleType = Enum.ScaleType.Fit;
+		rippleEffect.Position = newUDim2(0, mouse.X - rippleEffect.AbsolutePosition.X, 0, mouse.Y - rippleEffect.AbsolutePosition.Y);
+		rippleEffect:TweenSizeAndPosition(newUDim2(10, 0, 10, 0), newUDim2(-4.5, 0, -4.5, 0), "Out", "Quad", 0.33);
+		for i = 1, 10 do
+			rippleEffect.ImageTransparency = rippleEffect.ImageTransparency + 0.01;
+			wait();
+		end;
+		rippleEffect:Destroy();
+	end)
+end;
 
-            if _G.AutoClickDropdown == nil then continue end
+function OwlLib.Content:initBtnEffect(btn)
+	local btnHover = tweenService:Create(btn, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundTransparency = 0.85});
+	local btnHover1 = tweenService:Create(btn, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundTransparency = 1});
 
-            if _G.AutoClickDropdown == "Remote" then
-                local args = {
-                true,
-                 false
-                }
-                local M1 = GetCharacter():WaitForChild("client_character_controller"):WaitForChild("M1")
-                if M1 then
-                    M1:FireServer(unpack(args))
-                end
-                
-                
-            elseif _G.AutoClickDropdown == "Click" then
-                local vim = game:GetService("VirtualInputManager")
+    btn.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement then
+            btnHover:Play();
+        end;
+    end);
 
-                local mouseLocation = workspace.CurrentCamera.ViewportSize / 2
+    btn.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement then
+            btnHover1:Play();
+        end;
+    end);
+end;
 
-                
-            vim:SendMouseButtonEvent(
-                0,
-                0,
-                0,          -- ปุ่ม 0 = Left Click
-                true,       -- true = กดลง
-                game,
-                0
-            ) 
+function OwlLib:new(title)
+    local self = setmetatable({}, {__index = self.Content});
 
-            task.wait(0.5)
+    self.bodyFrame = game:GetObjects("rbxassetid://4531111462")[1];
+    self.bodyFrame.Parent = mainFrame;
+    self.bodyFrame.Name = title .. "BodyFrame";
+    self.bodyFrame.Visible = false;
+	
+	local tabBtn = game:GetObjects("rbxassetid://4530456835")[1];
+    tabBtn.Parent = mainFrame.tabsFrame;
+    tabBtn.tabLabel.Text = title;
+    tabBtn.Size = newUDim2(0, tabBtn.tabLabel.TextBounds.X + 20, 1, 0, 0);
 
-            vim:SendMouseButtonEvent(
-                    0,
-                    0,
-                    0,          -- ปุ่ม 0 = Left Click
-                    false,       -- true = กดลง
-                game,
-                0
-            ) 
-            end
+    if not firstBodyFrame then
+        firstBodyFrame = self.bodyFrame;
+        self.bodyFrame.Visible = true;
+		tabBtn.ImageColor3 = fromRGB(30, 30, 30);
+    end;
 
-            task.wait()
-        end
+    --[[tabBtn.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement and tabBtn.ImageColor3 ~= fromRGB(50, 50, 50) then
+            tweenService:Create(tabBtn, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {ImageColor3 = fromRGB(40, 40, 40)}):Play();
+        end;
+    end);
 
+    tabBtn.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement and tabBtn.ImageColor3 ~= fromRGB(50, 50, 50) then
+            tweenService:Create(tabBtn, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {ImageColor3 = fromRGB(30, 30, 30)}):Play();
+        end;
+    end);]]
 
-    end
-    })
+    tabBtn.MouseButton1Click:Connect(function()
+        for i, v in next, mainFrame:GetChildren() do
+            if v.Name:find("BodyFrame") then
+                if v ~= self.bodyFrame then
+                    v.Visible = false;
+                end;
+            end;
+        end;
+        for i, v in next, mainFrame.tabsFrame:GetChildren() do
+            if v:IsA("ImageButton") then
+                v.ImageColor3 = fromRGB(50, 50, 50);
+            end;
+        end;
+        tabBtn.ImageColor3 = fromRGB(30, 30, 30);
+        self.bodyFrame.Visible = true;
+    end);
 
+    return self;
+end;
 
-    _G.AutoPlay = false
+function OwlLib.Content:newBtn(title, callback, noToggle)
+    self:Resize(self.bodyFrame);
 
-    local AutoPlay = Tab1:Toggle({
-    Title = "Auto Play",
-    Desc = "",
-    Icon = "",
-    Type = "Checkbox",
-    Value = true, -- default value
-    Callback = function(state) 
-          _G.AutoPlay = state
-           if not _G.AutoPlay then
-                return
-            end
-        while _G.AutoPlay do
-           
+    if not noToggle then
+        local enabled = config[title] and true or false;
+        if enabled then
+            callback(enabled);
+            popup:new("Enabled " .. title);
+        end;
+        
+        local btn = game:GetObjects("rbxassetid://4531129509")[1];
+        btn.Parent = self.bodyFrame;
+        btn.titleLabel.Text = title;
+        btn.titleLabel.Size = newUDim2(0, btn.titleLabel.TextBounds.X, 1, 0);
+        btn.Size = newUDim2(0, btn.titleLabel.Size.X.Offset + 50, 0, 30);
 
-            for i,v in pairs( game:GetService("Players").LocalPlayer.PlayerGui:GetChildren()) do
-	                if v:IsA("ScreenGui") and v.Name == 'Main Menu' then  
-		              v:Destroy()
-					  game:GetService("ReplicatedStorage"):WaitForChild("requests"):WaitForChild("character"):WaitForChild("spawn"):FireServer()   
-                 break
-	            end
+        self:initBtnEffect(btn);
 
-            end
+        local toggle = {
+            [true] = fromRGB(0, 194, 94),
+            [false] = fromRGB(180, 0, 0)
+        };
 
-           
+        tweenService:Create(btn.statusFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundColor3 = toggle[enabled]}):Play();
 
-            task.wait(0.5)
-        end
-    end
-    })
+        btn.MouseButton1Click:Connect(function()
+            self:Ripple(btn);
+            enabled = not enabled;
+            config[title] = enabled;
+            saveConfig();
+            tweenService:Create(btn.statusFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundColor3 = toggle[enabled]}):Play();
+            callback(enabled);
+            popup:new((enabled and "Enabled " or "Disabled ") .. title);
+        end);
 
+        return {
+            Set = function(self, bool) 
+                enabled = bool;
+                if not noToggle then
+                    config[title] = enabled;
+                    saveConfig();
+                    tweenService:Create(btn.statusFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundColor3 = toggle[enabled]}):Play();
+                    callback(enabled);
+                    popup:new((enabled and "Enabled " or "Disabled ") .. title);
+                end;
+            end;
+        };
+    elseif noToggle then
+        local btn = game:GetObjects("rbxassetid://4531209476")[1];
+        btn.Parent = self.bodyFrame;
+        btn.titleLabel.Text = title;
+        btn.titleLabel.Size = newUDim2(0, btn.titleLabel.TextBounds.X, 1, 0);
+        btn.Size = newUDim2(0, btn.titleLabel.Size.X.Offset + 17, 0, 30);
 
+        self:initBtnEffect(btn);
 
-    Tab1:Divider()
+        btn.MouseButton1Click:Connect(function()
+            self:Ripple(btn);
+            callback();
+            popup:new("Enabled " .. title);
+        end);
 
-    local SEMOB = Tab1:Dropdown({
-    Title = "Select Mob",
-    Desc = "Dropdown Description",
-    Values = { "Boxer", "Samurai Master", "Samurai","Prison","Vampire"  },
-    Value = "",
-    Callback = function(option) 
-        _G.TT = option 
-    end
-    })
+        return {
+            Fire = function(self) 
+                callback();
+                popup:new("Enabled " .. title);
+            end;
+        };
+    end;
+end;
 
-    local TPDistance = Tab1:Slider({
-    Title = "TP Distance",
-    Desc = "tp when near mob spawn",
-    Step = 1,
-    Value = {
-        Min = 10,
-        Max = 500,
-        Default = 100,
-    },
-    Callback = function(value)
-        _G.RAYA = value
-    end
-})
+function OwlLib.Content:newSlider(title, callback, min, max, startPoint)
+    self:Resize(self.bodyFrame);
 
-
-
-    local toggle = Tab1:Toggle({
-        Title = "Start ",
-        Desc = "Start farm selected",
-        Type = "Checkbox",
-        Value = false,
-
-        Callback = function(Value)
-            _G.TG = Value
-            if not _G.TG then 
-                return 
-            end
-
-            task.spawn(function()
-                while _G.TG do
-                     local character = GetCharacter()
-                    local root = character:FindFirstChild("HumanoidRootPart")
-                    
-                    if not root then
-                        continue
-                    end
-
-                    local liveFolder = workspace:FindFirstChild("Live")
-                    if not liveFolder then 
-                        continue 
-                    end
-                    if not _G.TT then
-                        task.wait()
-                        continue
-                    end
-                    
-                    for _, v in pairs(liveFolder:GetChildren()) do
-                        if string.find(v.Name, _G.TT) then
-                            if Dist(root.Position,v.HumanoidRootPart.Position) <= _G.RAYA  then
-                                    local muRoot = v:FindFirstChild("HumanoidRootPart")
-                                        local humanoid = v:FindFirstChild("Humanoid")
-                            
-                                if muRoot and humanoid and humanoid.Health > 0 then
-                                    local targetCFrame = muRoot.CFrame * CFrame.new(0, 7.1, 0)
-                                    root.CFrame = targetCFrame * CFrame.Angles(math.rad(-90), 0, 0)
-                                
-                                    break -- Teleport to first enemy found then restart loop
-                                end
-                            end
-                        end
-                    end
-                    task.wait()
-                end
-            end)
-        end
-    })
-
-     Tab1:Divider()
-     local Raid1 = Section:Tab({
-        Title = "Raid",
-        Icon = "circle-alert",
-        Locked = false
-    })
+    local dragging = false;
     
+    local sliderFrame = game:GetObjects("rbxassetid://4531326550")[1];
+    sliderFrame.Parent = self.bodyFrame;
+    sliderFrame.titleLabel.Text = title;
+    sliderFrame.titleLabel.Size = newUDim2(0, sliderFrame.titleLabel.TextBounds.X, 1, 0);
+    sliderFrame.Size = newUDim2(0, sliderFrame.titleLabel.Size.X.Offset + 195, 0, 30);
 
-    _G.Auto = true
+    local startPoint = config[title] and tonumber(config[title]) or startPoint;
 
-   local AGainT = Raid1:Toggle({
-    Title = "Play Again",
-    Desc = "Play Again When Raid Complete",
-    Icon = "",
-    Type = "Checkbox",
-    Value = true,
-    Callback = function(state)
+    local sliderIndicatorFrame = sliderFrame.sliderIndicatorFrame;
+    sliderIndicatorFrame.valueLabel.Text = tostring(startPoint and floor((startPoint / max) * (max - min) + min) or 0);
 
-        _G.Auto = state
-        if not _G.Auto then return end
+    local slidingFrame = sliderFrame.sliderIndicatorFrame.slidingFrame;
+    slidingFrame.Size = newUDim2((startPoint or 0) / max, 0, 1, 0);
 
-        task.spawn(function()
-            repeat
-                local RC = game:GetService("Players")
-                    .LocalPlayer.PlayerGui:FindFirstChild("raidcomplete")
+    if startPoint then
+        local callbackValue = floor((startPoint / max) * (max - min) + min);
+        callback(callbackValue);
+        if config[title] then
+            popup:new("Set " .. title .. " to " .. tostring(callbackValue));
+        end;
+    end;
 
-                if RC then
-                    game:GetService("ReplicatedStorage")
-                        :WaitForChild("requests")
-                        :WaitForChild("character")
-                        :WaitForChild("retryraid")
-                        :FireServer()
-                end
+    local function slide(input)
+        local pos = newUDim2(clamp((input.Position.X - sliderIndicatorFrame.AbsolutePosition.X) / sliderIndicatorFrame.AbsoluteSize.X, 0, 1), 0, 1, 0);
+        slidingFrame:TweenSize(pos, Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.2, true);
+        local value = floor(((pos.X.Scale * max) / max) * (max - min) + min);
+        sliderIndicatorFrame.valueLabel.Text = tostring(value);
+        callback(value);
+    end;
 
-                task.wait(1) -- prevent lag
-            until not _G.Auto
-        end)
+    sliderIndicatorFrame.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            slide(input);
+			dragging = true;
+		end;
+	end);
+	
+	sliderIndicatorFrame.InputEnded:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = false;
+            config[title] = sliderIndicatorFrame.valueLabel.Text;
+            saveConfig();
+            popup:new("Set " .. title .. " to " .. sliderIndicatorFrame.valueLabel.Text);
+		end;
+    end);
 
-    end
-})
+	inputService.InputChanged:Connect(function(input)
+		if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+			slide(input);
+		end;
+	end);
+end;
 
-   
+function OwlLib.Content:newTextbox(title, callback, presetText, noCallbackOnStart)
+    self:Resize(self.bodyFrame);
 
-    Raid1:Divider()
-    local togge1 = Raid1:Toggle({
-        Title = "Start Raid",
-        Desc = "Start AFK",
-        Type = "Checkbox",
-        Value = false,
+    local btn = game:GetObjects("rbxassetid://4531463561")[1];
+    btn.Parent = self.bodyFrame;
+    btn.titleLabel.Text = title;
+    btn.titleLabel.Size = newUDim2(0, btn.titleLabel.TextBounds.X, 1, 0);
+    btn.Size = newUDim2(0, btn.titleLabel.Size.X.Offset + 100, 0, 30);
 
-        Callback = function(Value)
-            _G.TG1 = Value
-            if not _G.TG1 then return end
+    local presetText = (config[title] and config[title]) or (presetText and presetText or "");
+    if config[title] then
+        popup:new("Set " .. title .. " to " .. config[title]);
+    end;
 
-            task.spawn(function()
+    btn.inputBox.Text = presetText;
 
-                repeat
-                   if _G.State then
-                    local character = GetCharacter()
-                    local root = character:FindFirstChild("HumanoidRootPart")
-                    
-                    if not root then
-                        task.wait()
-                        continue
-                    end
+    if not noCallbackOnStart then
+        callback(presetText);
+    end;
 
-                    local liveFolder = workspace:FindFirstChild("Live")
-                    if not liveFolder then 
-                        continue 
-                    end
+    btn.inputBox.FocusLost:Connect(function()
+        config[title] = btn.inputBox.Text;
+        saveConfig();
+        callback(btn.inputBox.Text);
+        popup:new("Set " .. title .. " to " .. btn.inputBox.Text);
+    end);
+end;
 
-                    
-                    for _, v in pairs(liveFolder:GetChildren()) do
-                        if string.find(v.Name, "Samurai")
-                        or string.find(v.Name, "Cyborg")
-                        or string.find(v.Name, "Zombie")
-                        or string.find(v.Name, "Prison")
-                        or string.find(v.Name, "Police")
-                        or string.find(v.Name, "elite") 
-                         or string.find(v.Name, "kuza") 
-                         or string.find(v.Name, "Mafia") 
-                         or string.find(v.Name, "Leaders") 
-                        or string.find(v.Name, "Kira") or string.find(v.Name, "Zombie")
-                        or string.find(v.Name, "Vampire")
-                        or string.find(v.Name, "DIO") or string.find(v.Name, "Kujo")then
-                            
-                             local muRoot = v:FindFirstChild("HumanoidRootPart")
-                            local humanoid = v:FindFirstChild("Humanoid")
-                            
-                            if muRoot and humanoid and humanoid.Health > 0 then
-                                
-                             local targetCFrame = muRoot.CFrame * CFrame.new(0, 7.1, 0)
-                                root.CFrame = targetCFrame * CFrame.Angles(math.rad(-90), 0, 0)
-                                
-                            break
-                            end
-                        end
-                    end
-                    end
-                   task.wait()
-                until not _G.TG1
-            end)
+function OwlLib.Content:newBind(title, callback, presetKeyCode)
+    self:Resize(self.bodyFrame);
 
+    local enabled = false;
+    local listening = false;
+    local presetKeyCode = config[title] and Enum.KeyCode[config[title]] or presetKeyCode;
+    local activated = presetKeyCode and true or false;
+    local keyCode = presetKeyCode;
+
+    local btn = game:GetObjects("rbxassetid://4531229816")[1];
+    btn.Parent = self.bodyFrame;
+    btn.titleLabel.Text = title;
+    btn.titleLabel.Size = newUDim2(0, btn.titleLabel.TextBounds.X, 1, 0);
+    btn.Size = newUDim2(0, btn.titleLabel.Size.X.Offset + 90, 0, 30);
+
+    btn.bindBtn.Text = presetKeyCode and string.upper(tostring(string.char(presetKeyCode.Value))) or "KEY";
+    if config[title] then
+        popup:new("Set " .. title .. " to " .. string.upper(tostring(string.char(presetKeyCode.Value))));
+    end;
+
+    inputService.InputBegan:Connect(function(input, onGui)
+        if onGui then return; end;
+
+        if listening and not activated then
+            pcall(function()
+                btn.bindBtn.Text = string.upper(tostring(string.char(input.KeyCode.Value)));
+                listening = false;
+                config[title] = input.KeyCode.Name;
+                saveConfig();
+                keyCode = input.KeyCode;
+                activated = true;
+                popup:new("Set " .. title .. " to " .. string.upper(tostring(string.char(input.KeyCode.Value))));
+            end);
+		elseif activated and not listening and input.KeyCode == keyCode then
+            enabled = not enabled;
             
-        end
-    })
+            callback(enabled);
+        end;
+    end);
+
+    btn.bindBtn.MouseButton1Click:Connect(function()
+        btn.bindBtn.Text = "...";
+
+        activated = false;
+        listening = true;
+    end);
+end;
+
+function OwlLib.Content:newCBind(title, callback, presetKeyCode)
+    self:Resize(self.bodyFrame);
+
+    local enabled = false;
+    local presetKeyCode = presetKeyCode and presetKeyCode;
+    local shortNames = {
+        RightControl = 'RightCtrl';
+        LeftControl = 'LeftCtrl';
+        LeftShift = 'LShift';
+        RightShift = 'RShift';
+        MouseButton1 = "Mouse1";
+        MouseButton2 = "Mouse2";
+    };
+    if config[title] then
+        local keyboard = config[title]:find("Keyboard");
+        if keyboard then
+            presetKeyCode = Enum.KeyCode[config[title]:gsub("Keyboard", "")];
+        else
+            presetKeyCode = Enum.UserInputType[config[title]];
+        end;
+        popup:new("Set " .. title .. " to " .. (shortNames[presetKeyCode.Name] or presetKeyCode.Name));
+    end;
+    local activated = presetKeyCode and true or false;
+    local banned = {
+        Return = true;
+        Space = true;
+        Tab = true;
+        Unknown = true;
+    }
     
-    Raid1:Divider()
+    local function isreallypressed(bind, inp)
+        local key = bind
+        if typeof(key) == "Instance" then
+            if key.UserInputType == Enum.UserInputType.Keyboard and inp.KeyCode == key.KeyCode then
+                return true;
+            elseif tostring(key.UserInputType):find("MouseButton") and inp.UserInputType == key.UserInputType then
+                return true
+			end
+        end
+        if tostring(key):find'MouseButton' then
+            return key == inp.UserInputType
+        else
+            return key == inp.KeyCode
+        end
+    end
     
-    _G.Dodge = false
-    local DODGE = Raid1:Toggle({
-        Title = "Auto Dodge Kira Bomb",
-        Desc = "NOT 100% Perefect Dodge ", 
-        Type = "Checkbox",
-        Value = false,
+    local allowed = {
+        MouseButton1 = true;
+        MouseButton2 = true;
+    };
 
-        Callback = function(Value)
-            _G.Dodge = Value
-           
+    local nm = (presetKeyCode and (shortNames[presetKeyCode.Name] or presetKeyCode.Name) or "None");
+    local keyCode = presetKeyCode;
 
-           if not _G.Dodge then return end
+    local btn = game:GetObjects("rbxassetid://4531229816")[1];
+    btn.Parent = self.bodyFrame;
+    btn.titleLabel.Text = title;
+    btn.titleLabel.Size = newUDim2(0, btn.titleLabel.TextBounds.X, 1, 0);
+    btn.Size = newUDim2(0, btn.titleLabel.Size.X.Offset + 90, 0, 30);
 
-task.spawn(function()
+    btn.bindBtn.Text = nm;
+
+    inputService.InputBegan:Connect(function(input, onGui)
+        if onGui then return; end;
+        if activated and isreallypressed(keyCode, input) then
+            callback(true);
+        end;
+    end);
+    inputService.InputEnded:Connect(function(input, onGui)
+        if onGui then return; end;
+        if activated and not listening and isreallypressed(keyCode, input) then
+            callback(false);
+        end;
+    end);    
+    btn.bindBtn.MouseButton1Click:Connect(function()
+        btn.bindBtn.Text = "...";
+        activated = false;
+        local input, onGui = inputService.InputBegan:Wait();
+        config[title] = (input.UserInputType ~= Enum.UserInputType.Keyboard and input.UserInputType.Name or input.KeyCode.Name .. "Keyboard");
+        saveConfig();
+        keyCode = input;
+        local name = (input.UserInputType ~= Enum.UserInputType.Keyboard and (shortNames[input.UserInputType.Name] or input.UserInputType.Name) or input.KeyCode.Name);
+        btn.bindBtn.Text = name
+        activated = true;
+        popup:new("Set " .. title .. " to " .. (shortNames[input.UserInputType.Name] or input.UserInputType.Name));
+    end);
+end;
+
+function OwlLib.Content:newColorPicker(title, callback, presetColor)
+    self:Resize(self.bodyFrame);
+
+    local oldSize;
+    local rainbow = false;
+    local hueSatDragging = false;
+    local valueDragging = false;
+
+    local btn = game:GetObjects("rbxassetid://4531551348")[1];
+    btn.Parent = self.bodyFrame;
+    btn.titleLabel.Text = title;
+    btn.titleLabel.Size = newUDim2(0, btn.titleLabel.TextBounds.X, 1, 0);
+    btn.Size = newUDim2(0, btn.titleLabel.Size.X.Offset + 50, 0, 30);
+
+    local colorFrame = btn.colorFrame;
+    local colorPickingFrame = btn.colorPickingFrame;
+    local rainbowBtn = colorPickingFrame.rainbowBtn;
+    local hueSatFrame = colorPickingFrame.hueSatFrame;
+    local valueFrame = colorPickingFrame.valueFrame;
+    local hueSatIndicatorFrame = hueSatFrame.hueSatIndicatorFrame;
+    local valueIndicatorFrame = valueFrame.valueIndicatorFrame;
+
+    local presetColor = presetColor and presetColor or fromRGB(255, 255, 255);
+    if config[title] then
+        if config[title]["R"] then
+            presetColor = fromRGB(config[title]["R"], config[title]["G"], config[title]["B"]);
+            popup:new("Set " .. title .. " to " .. floor(config[title]["R"] * 255) .. " " .. floor(config[title]["G"] * 255) .. " " .. floor(config[title]["B"] * 255));
+        elseif config[title] == "Rainbow" then
+            rainbow = true;
+            popup:new("Set " .. title .. " to rainbow");
+        end;
+    end;
+
+    callback(presetColor);
+
+    colorFrame.BackgroundColor3 = presetColor;
+
+    self:initBtnEffect(btn);
+
+    btn.MouseButton1Click:Connect(function()
+        if not colorPickingFrame.Visible then
+            oldSize = self.bodyFrame.CanvasSize;
+            self.bodyFrame.CanvasSize = oldSize + newUDim2(0, 0, 0, 170);
+            colorPickingFrame.Visible = true;
+            colorPickingFrame:TweenSize(newUDim2(0, 170, 0, 120), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.2, true);
+        elseif colorPickingFrame.Visible then
+            colorPickingFrame:TweenSize(newUDim2(0, 170, 0, 0), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.2, true);
+            wait(0.15);
+            colorPickingFrame.Visible = false;
+            self.bodyFrame.CanvasSize = oldSize;
+        end;
+    end);
+
+    rainbowBtn.MouseButton1Click:Connect(function()
+        config[title] = "Rainbow";
+        saveConfig();
+        rainbow = true;
+        popup:new("Set " .. title .. " to rainbow");
+    end);
     
+    hueSatFrame.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            hueSatDragging = true;
+        end;
+    end);
     
-    while _G.Dodge do
-    local player = game:GetService("Players").LocalPlayer
-    local char = player.Character
+    hueSatFrame.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            hueSatDragging = false;
+            config[title] = {R = colorFrame.BackgroundColor3.R * 255, G = colorFrame.BackgroundColor3.G * 255, B = colorFrame.BackgroundColor3.B * 255};
+            saveConfig();
+            popup:new("Set " .. title .. " to " .. floor(colorFrame.BackgroundColor3.R * 255) .. " " .. floor(colorFrame.BackgroundColor3.G * 255) .. " " .. floor(colorFrame.BackgroundColor3.B * 255));
+        end;
+    end);
 
-    if char then
-        local controller = char:FindFirstChild("client_character_controller")
-        local root = char:FindFirstChild("HumanoidRootPart")
-
-        if controller and root then
-            local sound = root:FindFirstChild("Primary Bomb Detonate")
-            local dodgeRemote = controller:FindFirstChild("Dodge")
-
-            if sound and dodgeRemote then
-                if sound.Playing then
-                    task.wait(0.2)
-                    dodgeRemote:FireServer({
-                        A = false,
-                        D = false,
-                        W = true,
-                        S = false
-                    })
-                end
-            end
-        end
-    end
-
-    task.wait()
-end
-end)
-        end
-    })
-    Tab1:Divider()
-
-
-    local togge1 = Tab1:Toggle({
-        Title = "Start kys",
-        Desc = "Start kys at meditation", 
-        Type = "Checkbox",
-        Value = false,
-
-        Callback = function(Value)
-            _G.TG2 = Value
-            if not _G.TG2 then return end
-
-            task.spawn(function()
-
-                repeat
-                   
-                    local character = GetCharacter()
-                    local root = character:FindFirstChild("HumanoidRootPart")
-                    
-                    if not root then
-                        task.wait()
-                        continue
-                    end
-
-                    local liveFolder = workspace:FindFirstChild("Live")
-                    local metad = workspace.Npcs:FindFirstChild("Meditation")
-           
-                    if not liveFolder  then 
-                        task.wait()
-                        continue 
-
-                    end
-                    
-                    if metad then
-                        local args = {
-                             workspace:WaitForChild("Npcs"):WaitForChild("Meditation"),
-                                "Meditate."
-                                }
-                        game:GetService("ReplicatedStorage"):WaitForChild("requests"):WaitForChild("character"):WaitForChild("dialogue"):FireServer(unpack(args))
-                                wait(5)
-                                local args = {
-    workspace:WaitForChild("Npcs"):WaitForChild("The Self"),
-    "Yes."
-}
-game:GetService("ReplicatedStorage"):WaitForChild("requests"):WaitForChild("character"):WaitForChild("dialogue"):FireServer(unpack(args))
-                    end
-                    
-                    for _, v in pairs(liveFolder:GetChildren()) do
-                        if string.find(v.Name, '.'..player.Name..' entity') then
-                            
-                             local muRoot = v:FindFirstChild("HumanoidRootPart")
-                            local humanoid = v:FindFirstChild("Humanoid")
-                            
-                            if muRoot and humanoid and humanoid.Health > 0 then
-                             local targetCFrame = muRoot.CFrame * CFrame.new(0, 7.1, 0)
-                                root.CFrame = targetCFrame * CFrame.Angles(math.rad(-90), 0, 0)
-                                
-                                break
-                            end
-                        end
-                    end
-                    
-                   task.wait()
-                until not _G.TG2
-            end)
-        end
-    })
-
-
-local worldEtab = Section:Tab({
-    Title = "World Events",
-    Icon = "earth",
-    Locked = false,
-})
-
-_G.WorldE = false
-local WorldT = worldEtab:Toggle({
-    Title = "Auto World Event",
-    Desc = "",
-    Icon = "",
-    Type = "Checkbox",
-    Value = false, -- default value
-    Callback = function(state) 
-           _G.WorldE = Value
-            if not _G.WorldE then return end
-
-            task.spawn(function()
-
-                
-
-            end)
-    end
-})
-
-local shoptab = Section:Tab({
-    Title = "Shop",
-    Icon = "store",
-    Locked = false,
-})
-
-local Presshop = shoptab:Button({
-    Title = "Prestige Shop",
-    Desc = "",
-    Locked = false,
-    Callback = function()
-        game:GetService("Players").LocalPlayer.PlayerGui["Prestige Shop"].prestige_shop.Visible = true
-    end
-})
-
-local Raidshop = shoptab:Button({
-    Title = "Raid Shop",
-    Desc = "",
-    Locked = false,
-    Callback = function()
-        game:GetService("Players").LocalPlayer.PlayerGui["Raid Shop"].raid_shop.Visible = true
-    end
-})
-
-local  Ganghop = shoptab:Button({
-    Title = "Gang Shop",
-    Desc = "",
-    Locked = false,
-    Callback = function()
- game:GetService("Players").LocalPlayer.PlayerGui["Gang Shop"].gang_shopend.Visible = true
-    end
-})
-
-local  CashShop = shoptab:Button({
-    Title = "Cash Shop",
-    Desc = "",
-    Locked = false,
-    Callback = function()
- game:GetService("Players").LocalPlayer.PlayerGui["Cash Shop"].cash_shop.Visible = true
-    end
-})
-
-
-local npcFolder = game:GetService("ReplicatedStorage").assets.npc_cache
-local Npcs = {}
-
-for _, v in pairs(npcFolder:GetChildren()) do
-    if v:FindFirstChild("HumanoidRootPart") then
-	task.wait()
-        table.insert(Npcs, v.Name)
-    end
-end
-
-local misctab = Section:Tab({
-    Title = "Misc",
-    Icon = "circle-gauge",
-    Locked = false,
-})
-
-_G.SS = true
-local Toggle = misctab:Toggle({
-    Title = "Summon  Stand",
-    Desc = "auto stand",
-    Icon = "",
-    Type = "Checkbox",
-    Value = true, -- default value
-    Callback = function(value) 
-       _G.SS = value
-       if not _G.SS then return end
-        task.spawn(function()
-                local player = game:GetService("Players").LocalPlayer
-                local gui = player.PlayerGui
-
-                while _G.SS do
-        
-                        local stands = gui:FindFirstChild("Stand Skills")
-                        
-                        local Holer = stands:FindFirstChild("Holder").C
-                        if Holer.GroupTransparency == 1 then
-                                local ER = GetCharacter():WaitForChild("client_character_controller")
-                            if ER then
-                                ER:WaitForChild("SummonStand"):FireServer()
-                            end
-                        
-                            end
-                task.wait()
-                end
-        
-        
-        end)
-       
-    end
-})
-
-misctab:Dropdown({
-    Title = "All Npcs",
-    Desc = "Teleport To",
-    Values = Npcs,
-    Callback = function(option)
-        local npc = npcFolder:FindFirstChild(option)
-
-        if npc and npc:FindFirstChild("HumanoidRootPart") then
-            game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame =
-                npc.HumanoidRootPart.CFrame
-        end
-    end
-})
-
-misctab:Dropdown({
-    Title = "Raid Npcs",
-    Desc = "Teleport To",
-    Values = {'Avdol','Chumbo','Yoshikage Kira','???'},
-    Callback = function(option)
-        local npc = npcFolder:FindFirstChild(option)
-
-        if npc and npc:FindFirstChild("HumanoidRootPart") then
-            game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame =
-                npc.HumanoidRootPart.CFrame
-        end
-    end
-})
-
+    valueFrame.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            valueDragging = true;
+        end;
+    end)
     
+    valueFrame.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            valueDragging = false;
+            config[title] = {R = colorFrame.BackgroundColor3.R * 255, G = colorFrame.BackgroundColor3.G * 255, B = colorFrame.BackgroundColor3.B * 255};
+            saveConfig();
+            popup:new("Set " .. title .. " to " .. floor(colorFrame.BackgroundColor3.R) .. " " .. floor(colorFrame.BackgroundColor3.G) .. " " .. floor(colorFrame.BackgroundColor3.B));
+        end;
+    end);
 
-    misctab:Divider()
+    game:GetService("UserInputService").InputChanged:Connect(function(input)
+        if hueSatDragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+            rainbow = false;
+            hueSatIndicatorFrame.Position = newUDim2(clamp((input.Position.X - hueSatFrame.AbsolutePosition.X) / hueSatFrame.AbsoluteSize.X, 0, 1), 0, clamp((input.Position.Y - hueSatFrame.AbsolutePosition.Y) / hueSatFrame.AbsoluteSize.Y, 0, 1), 0);
+            valueIndicatorFrame.BackgroundColor3 = fromHSV(h, 1 - (1 - hueSatIndicatorFrame.Position.Y.Scale), 1);
+            colorFrame.BackgroundColor3 = fromHSV(hueSatIndicatorFrame.Position.X.Scale, 1 - hueSatIndicatorFrame.Position.Y.Scale, 1 - valueIndicatorFrame.Position.Y.Scale);
+            valueFrame.ImageColor3 = fromHSV(hueSatIndicatorFrame.Position.X.Scale, 1 - hueSatIndicatorFrame.Position.Y.Scale, 1);
+            callback(colorFrame.BackgroundColor3);
+        elseif valueDragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+            rainbow = false;
+            valueIndicatorFrame.Position = newUDim2(0, 0, clamp((input.Position.Y - valueFrame.AbsolutePosition.Y) / valueFrame.AbsoluteSize.Y, 0, 1), 0);
+            valueIndicatorFrame.BackgroundColor3 = fromHSV(h, 1 - (1 - hueSatIndicatorFrame.Position.Y.Scale), 1);
+            colorFrame.BackgroundColor3 = fromHSV(hueSatIndicatorFrame.Position.X.Scale, 1 - hueSatIndicatorFrame.Position.Y.Scale, 1 - valueIndicatorFrame.Position.Y.Scale);
+            valueFrame.ImageColor3 = fromHSV(hueSatIndicatorFrame.Position.X.Scale, 1 - hueSatIndicatorFrame.Position.Y.Scale, 1);
+            callback(colorFrame.BackgroundColor3);
+        end;
+    end);
 
-    local Players = game:GetService("Players")
-    local PlayersList = {}
+    spawn(function()
+        while true do
+            for i = 1, 230 do
+                rainbowBtn.TextColor3 = fromHSV(i / 230, 1, 1);
+                if rainbow then
+                    colorFrame.BackgroundColor3 = fromHSV(i / 230, 1, 1);
+                    callback(fromHSV(i / 230, 1, 1));
+                end;
+                wait();
+            end;
+            wait();
+        end;
+    end);
+end;
 
-    local function GetPlayers()
-    PlayersList = {} 
+function OwlLib.Content:newDropdown(title, callback, list, noCallbackOnStart)
+    self:Resize(self.bodyFrame);
 
-    for _, player in pairs(Players:GetPlayers()) do
-        if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-            table.insert(PlayersList, player.Name)
+    local oldSize;
+    local btn = game:GetObjects("rbxassetid://4531687341")[1];
+    btn.Parent = self.bodyFrame;
+    btn.titleLabel.Text = title;
+    btn.titleLabel.Size = newUDim2(0, btn.titleLabel.TextBounds.X, 1, 0);
+    btn.Size = newUDim2(0, btn.titleLabel.Size.X.Offset + 80, 0, 30);
+
+    if not noCallbackOnStart then
+        callback(config[title] and config[title] or list[1]);
+        if config[title] then
+            popup:new("Set " .. title .. " to " .. config[title]);
+        end;
+    end;
+
+    local arrowLabel = btn.arrowLabel;
+    local bodyFrame = btn.bodyFrame;
+
+    self:initBtnEffect(btn);
+    
+    local function refresh(list)
+        for i, v in next, bodyFrame:GetChildren() do
+            if not v:IsA("UIListLayout") then v:Destroy(); end;
         end
+        for i, v in next, list do
+            local btn = game:GetObjects("rbxassetid://4531683854")[1];
+            btn.Parent = bodyFrame;
+            btn.Text = v;
+            btn.ZIndex = 2;
+
+            local btnHover = tweenService:Create(btn, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundTransparency = 0.5});
+            local btnHover1 = tweenService:Create(btn, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundTransparency = 1});
+
+            btn.InputBegan:Connect(function(input)
+                if input.UserInputType == Enum.UserInputType.MouseMovement then
+                    btnHover:Play();
+                end;
+            end);
+
+            btn.InputEnded:Connect(function(input)
+                if input.UserInputType == Enum.UserInputType.MouseMovement then
+                    btnHover1:Play();
+                end;
+			end);
+
+            local arrowTween = tweenService:Create(arrowLabel, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Rotation = 180});
+
+            btn.MouseButton1Click:Connect(function()
+                config[title] = v;
+                saveConfig();
+                callback(v);
+                popup:new("Set " .. title .. " to " .. v);
+                arrowTween:Play();
+                bodyFrame:TweenSize(newUDim2(0, 170, 0, 0), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.2, true);
+                wait(0.15);
+                bodyFrame.Visible = false;
+                self.bodyFrame.CanvasSize = oldSize;
+            end);
+        end;
     end
 
-    return PlayersList
-    end
+    refresh(list);
 
-    local PlayerWWW = misctab:Dropdown({
-    Title = "TP TO Players",
-    Desc = "Teleport To Player",
-    Values = GetPlayers(),
-    Callback = function(option)
-        local targetPlayer = Players:FindFirstChild(option)
+    local arrowTween = tweenService:Create(arrowLabel, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Rotation = 0});
+    local arrowTween1 = tweenService:Create(arrowLabel, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Rotation = 180});
 
-        if targetPlayer
-        and targetPlayer.Character
-        and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
+    btn.MouseButton1Click:Connect(function()
+        if not bodyFrame.Visible then
+            oldSize = self.bodyFrame.CanvasSize;
+            self.bodyFrame.CanvasSize = oldSize + newUDim2(0, 0, 0, 170);
+            bodyFrame.Visible = true;
+            arrowTween:Play();
+            bodyFrame:TweenSize(newUDim2(0, 170, 0, (#bodyFrame:GetChildren() - 1) * 27), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.2, true);
+        elseif bodyFrame.Visible then
+            arrowTween1:Play();
+            bodyFrame:TweenSize(newUDim2(0, 170, 0, 0), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.2, true);
+            wait(0.15);
+            bodyFrame.Visible = false;
+            self.bodyFrame.CanvasSize = oldSize;
+        end;
+    end);
 
-            Players.LocalPlayer.Character.HumanoidRootPart.CFrame =
-                targetPlayer.Character.HumanoidRootPart.CFrame
+    return {
+        Refresh = function(self, list)
+            refresh(list);
         end
-    end
-})
+    }
+end;
 
-local Button = misctab:Button({
-    Title = "Refresh",
-    Desc = "Refresh Player List",
-    Locked = false,
-    Callback = function()
-        local newList = GetPlayers()
-        PlayerWWW:Refresh(newList) 
-    end
-})
-
-misctab:Divider()
- local noEffect = misctab:Toggle({
-    Title = "No Effect (Bug Sometimes)",
-    Desc = "Remove Effect and cutscene",
-    Type = "Checkbox",
-    Value = false,
-
-    Callback = function(Value)
-        _G.NOEFF = Value
-        if not _G.NOEFF then return end
-
-        task.spawn(function()
-            local player = game:GetService("Players").LocalPlayer
-            local gui = player.PlayerGui
-
-            repeat
-                local eff = workspace:FindFirstChild("Effects")
-
-                if eff then
-                    eff:Destroy()
-                else
-                    if gui:FindFirstChild("Stand Skills") then
-                        gui["Stand Skills"].Enabled = true
-                    end
-                    if gui:FindFirstChild("Inventory") then
-                        gui.Inventory.Enabled = true
-                    end
-                    if gui:FindFirstChild("menu") then
-                        gui.menu.Enabled = true
-                    end
-                    if gui:FindFirstChild("MainHud") then
-                        gui.MainHud.Enabled = true
-                    end
-                end
-
-                task.wait(0.5)
-            until not _G.NOEFF
-        end)
-    end
-})
-
-    local function useskill(loc,bool)
-         local char = GetCharacter()
-        if char then
-            local args = {
-            loc,
-            bool
-            }
-            char:WaitForChild("client_character_controller"):WaitForChild("Skill"):FireServer(unpack(args))
-        end
-    end
-
-     misctab:Divider()
-     _G.R = false
-     _G.Z = false
-     _G.X = false
-     _G.C = false
-      _G.Z = false
-    local skillR = misctab:Toggle({
-        Title = "Auto Spam R ",
-        Desc = "", 
-        Type = "Checkbox",
-        Value = false,
-
-        Callback = function(Value)
-            _G.R = Value
-            if not _G.R then return end
-
-            task.spawn(function()
-                repeat
-                   useskill('R',true)
-                   useskill('R',false)
-                   task.wait()
-                until not _G.R
-            end)
-        end
-    })
-
-        local skillZ = misctab:Toggle({
-        Title = "Auto Spam Z ",
-        Desc = "", 
-        Type = "Checkbox",
-        Value = false,
-
-        Callback = function(Value)
-            _G.Z = Value
-            if not _G.Z then return end
-
-            task.spawn(function()
-                repeat
-                   useskill('Z',true)
-                   useskill('Z',false)
-                    task.wait()
-                until not _G.Z
-            end)
-        end
-    })
-
-    local skillX = misctab:Toggle({
-        Title = "Auto Spam X ",
-        Desc = "", 
-        Type = "Checkbox",
-        Value = false,
-
-        Callback = function(Value)
-            _G.X = Value
-            if not _G.X then return end
-
-            task.spawn(function()
-                repeat
-                  useskill('X',true)
-                   useskill('X',false)
-                    task.wait()
-                until not _G.X
-            end)
-        end
-    })
-    local skillC = misctab:Toggle({
-        Title = "Auto Spam C ",
-        Desc = "", 
-        Type = "Checkbox",
-        Value = false,
-
-        Callback = function(Value)
-            _G.C = Value
-            if not _G.C then return end
-
-            task.spawn(function()
-                repeat
-                  useskill('C',true)
-                   useskill('C',false)
-                    task.wait()
-                until not _G.C
-            end)
-        end
-    })
-
-
-   local skillV = misctab:Toggle({
-        Title = "Auto Spam v ",
-        Desc = "", 
-        Type = "Checkbox",
-        Value = false,
-
-        Callback = function(Value)
-            _G.V = Value
-            if not _G.V then return end
-
-            task.spawn(function()
-                repeat
-                 useskill('V',true)
-                   useskill('V',false)
-                    task.wait()
-                until not _G.V
-            end)
-        end
-    })
-
-
-end
+return OwlLib;
