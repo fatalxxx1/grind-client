@@ -634,94 +634,65 @@ function OwlLib.Content:newColorPicker(title, callback, presetColor)
     end);
 end;
 
-function OwlLib.Content:newDropdown(title, callback, list, noCallbackOnStart)
+function OwlLib.Content:newMultiDropdown(title, callback, list, noCallbackOnStart)
     self:Resize(self.bodyFrame);
 
-    local oldSize;
+    local selections = {} -- Store toggled states here
     local btn = game:GetObjects("rbxassetid://4531687341")[1];
     btn.Parent = self.bodyFrame;
     btn.titleLabel.Text = title;
-    btn.titleLabel.Size = newUDim2(0, btn.titleLabel.TextBounds.X, 1, 0);
-    btn.Size = newUDim2(0, btn.titleLabel.Size.X.Offset + 80, 0, 30);
-
-    if not noCallbackOnStart then
-        callback(config[title] and config[title] or list[1]);
-        if config[title] then
-            popup:new("Set " .. title .. " to " .. config[title]);
-        end;
-    end;
+    btn.titleLabel.Size = UDim2.new(0, btn.titleLabel.TextBounds.X, 1, 0);
+    btn.Size = UDim2.new(0, btn.titleLabel.Size.X.Offset + 80, 0, 30);
 
     local arrowLabel = btn.arrowLabel;
     local bodyFrame = btn.bodyFrame;
-
     self:initBtnEffect(btn);
-    
-    local function refresh(list)
-        for i, v in next, bodyFrame:GetChildren() do
-            if not v:IsA("UIListLayout") then v:Destroy(); end;
+
+    local function refresh(newList)
+        for _, v in next, bodyFrame:GetChildren() do
+            if not v:IsA("UIListLayout") then v:Destroy() end
         end
-        for i, v in next, list do
-            local btn = game:GetObjects("rbxassetid://4531683854")[1];
-            btn.Parent = bodyFrame;
-            btn.Text = v;
-            btn.ZIndex = 2;
 
-            local btnHover = tweenService:Create(btn, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundTransparency = 0.5});
-            local btnHover1 = tweenService:Create(btn, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundTransparency = 1});
+        for _, v in next, newList do
+            local itemBtn = game:GetObjects("rbxassetid://4531683854")[1];
+            itemBtn.Parent = bodyFrame;
+            itemBtn.Text = v;
+            itemBtn.ZIndex = 2;
 
-            btn.InputBegan:Connect(function(input)
-                if input.UserInputType == Enum.UserInputType.MouseMovement then
-                    btnHover:Play();
-                end;
-            end);
+            -- Visual indicator for selection (Change color/transparency if selected)
+            local function updateVisual()
+                itemBtn.TextColor3 = selections[v] and Color3.fromRGB(0, 255, 140) or Color3.fromRGB(255, 255, 255)
+            end
+            updateVisual()
 
-            btn.InputEnded:Connect(function(input)
-                if input.UserInputType == Enum.UserInputType.MouseMovement then
-                    btnHover1:Play();
-                end;
-			end);
-
-            local arrowTween = tweenService:Create(arrowLabel, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Rotation = 180});
-
-            btn.MouseButton1Click:Connect(function()
-                config[title] = v;
-                saveConfig();
-                callback(v);
-                popup:new("Set " .. title .. " to " .. v);
-                arrowTween:Play();
-                bodyFrame:TweenSize(newUDim2(0, 170, 0, 0), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.2, true);
-                wait(0.15);
-                bodyFrame.Visible = false;
-                self.bodyFrame.CanvasSize = oldSize;
-            end);
-        end;
+            itemBtn.MouseButton1Click:Connect(function()
+                selections[v] = not selections[v] -- Toggle true/false
+                updateVisual()
+                
+                -- Return the entire table of selections to the callback
+                callback(selections) 
+                
+                -- Note: We removed the auto-close logic here so the user can pick multiple
+            end)
+        end
     end
 
-    refresh(list);
+    refresh(list)
 
-    local arrowTween = tweenService:Create(arrowLabel, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Rotation = 0});
-    local arrowTween1 = tweenService:Create(arrowLabel, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Rotation = 180});
-
+    -- Standard Open/Close logic (Keeping the frame open for multiple clicks)
     btn.MouseButton1Click:Connect(function()
         if not bodyFrame.Visible then
-            oldSize = self.bodyFrame.CanvasSize;
-            self.bodyFrame.CanvasSize = oldSize + newUDim2(0, 0, 0, 170);
-            bodyFrame.Visible = true;
-            arrowTween:Play();
-            bodyFrame:TweenSize(newUDim2(0, 170, 0, (#bodyFrame:GetChildren() - 1) * 27), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.2, true);
-        elseif bodyFrame.Visible then
-            arrowTween1:Play();
-            bodyFrame:TweenSize(newUDim2(0, 170, 0, 0), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.2, true);
-            wait(0.15);
-            bodyFrame.Visible = false;
-            self.bodyFrame.CanvasSize = oldSize;
-        end;
-    end);
+            bodyFrame.Visible = true
+            bodyFrame:TweenSize(UDim2.new(0, 170, 0, (#bodyFrame:GetChildren() - 1) * 27), "Out", "Quad", 0.2, true)
+        else
+            bodyFrame:TweenSize(UDim2.new(0, 170, 0, 0), "Out", "Quad", 0.2, true)
+            task.wait(0.15)
+            bodyFrame.Visible = false
+        end
+    end)
 
     return {
-        Refresh = function(self, list)
-            refresh(list);
-        end
+        Refresh = function(self, newList) refresh(newList) end
     }
 end;
 
