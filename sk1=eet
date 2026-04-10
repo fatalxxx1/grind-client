@@ -1707,25 +1707,7 @@ end
 
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
-local raventag = Client:CreateToggle({
-    Name = "RavenB4 Tag",
-    Callback = function(Callback) 
-        RavenTagEnabled = Callback
-            TextChatService.OnIncomingMessage = function(message)
-				local properties = Instance.new("TextChatMessageProperties")
-				if message.TextSource then
-					local getidplayer = Players:GetPlayerByUserId(message.TextSource.UserId)
-					if getidplayer and getidplayer.UserId == LocalPlayer.UserId then
-                        if RavenTagEnabled then
-						    properties.PrefixText = "<font color='#692B97'>[RAVEN B4 USER]</font> " .. message.PrefixText
-                        else
-                            properties.PrefixText = message.PrefixText
-                        end
-					end
-				end
-			return properties
-		end
-end})
+
 
 
 local TweenService = game:GetService("TweenService")
