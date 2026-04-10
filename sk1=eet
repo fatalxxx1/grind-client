@@ -1572,18 +1572,14 @@ Credits.BorderSizePixel = 0
 Credits.Position = UDim2.new(0.76, 0, 0.95, 0)
 Credits.Size = UDim2.new(0, 183, 0, 24)
 Credits.Font = Enum.Font.Fantasy
-Credits.Text = "Still bypasses most supported games even 1.5 years later!"
+Credits.Text = "Skid.jar"
 Credits.TextColor3 = Color3.fromRGB(255, 255, 255)
 Credits.TextSize = 14.000
 Credits.TextXAlignment = Enum.TextXAlignment.Right
 
 --Tabs
--- shared:createnotification("Press \"V\" or the Raven Icon to open the GUI!",3,"Raven B4 Loaded")
+shared:createnotification("Notif",3,"Raven B4 Loaded")
 
-
-
-Legit = lib:CreateWindow("Legit",UDim2.new(0.4, 0, 0.4, 0),"0")
-Render = lib:CreateWindow("Render",UDim2.new(0.62, 0, 0.1, 0),"0")
 Client = lib:CreateWindow("Client",UDim2.new(0.435, 0, 0.4, 0),"0")
 
 GUIToggle = Client:CreateToggle({
