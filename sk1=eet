@@ -1455,11 +1455,11 @@ function lib:CreateWindow(text, Position)
                     MiniButtonText.TextColor3 = Color3.fromRGB(255, 255, 255)
                 end
                 options.Callback(toggled)
-                if GUISaveSettings[OptionsName()][options.Name] ~= nil then
-                    GUISaveSettings[OptionsName()][options.Name] = toggled
-                else
-                    print("Mini Toggle Save doesn't seem to function!")
-                end
+                -- if GUISaveSettings[OptionsName()][options.Name] ~= nil then
+                --     GUISaveSettings[OptionsName()][options.Name] = toggled
+                -- else
+                --     print("Mini Toggle Save doesn't seem to function!")
+                -- end
             end
             MiniButton.MouseButton1Click:Connect(function ()
                 toggle()
@@ -1506,9 +1506,7 @@ function lib:CreateWindow(text, Position)
 end
 
 
-local function CustomTween(Part,Info,Style,Time,DelayTime)
-    TweenService:Create(Part, TweenInfo.new(Time,Style,Enum.EasingDirection.Out,0,false,DelayTime), Info):Play()
-end
+
 function RainbowGradient(Parent)
     task.spawn(function ()
         local UIGradient2 = Instance.new("UIGradient")
@@ -1541,12 +1539,7 @@ function lib:ToggleLib()
         ScreenGUIFrame.Position = UDim2.new(0,0,1,0)
         ScreenGUIFrame:TweenPosition(UDim2.new(0,0,0,0),Enum.EasingDirection.Out,Enum.EasingStyle.Sine,0.2)
         ScreenGUIFrame:TweenSize(UDim2.new(1,0,1,0), Enum.EasingDirection.InOut, Enum.EasingStyle.Sine, 0.2)
-        CustomTween(LeftSideRaven,{Position = UDim2.new(0, 0, 0, 0)},Enum.EasingStyle.Bounce,0.5,0)
-        CustomTween(RavenText,{Position = UDim2.new(0, 0, 0, 0)},Enum.EasingStyle.Bounce,0.5,0)
-        CustomTween(RightSideRaven,{Position = UDim2.new(1, 0, 0, 0)},Enum.EasingStyle.Bounce,0.5,0)
-        CustomTween(RavenTextB4,{Position = UDim2.new(0, 0, 0.75, 0)},Enum.EasingStyle.Bounce,0.5,0)
-        CustomTween(TopRaven,{Size = UDim2.new(1, 0, 0, lineswidth)},Enum.EasingStyle.Linear,0.25,0.5)
-        CustomTween(BottomRaven,{Size = UDim2.new(1.08, 0, 0, lineswidth)},Enum.EasingStyle.Linear,0.25,0.5)
+       
     else
         ScreenGui.Enabled = false
         Frame.Visible = false
