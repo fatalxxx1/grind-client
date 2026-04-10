@@ -23,9 +23,7 @@ shared.listthemes = {
     ["Berry"] = { 330, 360 } -- Magenta to red
 }
 
-shared.FileName = shared.RavenConfigName ~= nil and shared.RavenConfigName or 'Default Config'
 local RepStorage = game:GetService("ReplicatedStorage")
-local file = shared.FileName ~= nil and shared.FileName
 local UIS = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
 local HttpService = game:service('HttpService')
@@ -47,51 +45,15 @@ local allToggles = {} -- Table to store all toggle objects
 
 -- At the top of the script, define the config file name and initialize variables
 local HttpService = game:GetService("HttpService")
-local file = shared.RavenConfigName or "DefaultConfig.json"
 local GUISaveSettings = {}
 local GUILoadSettings = {}
 local saveDebounce = false
 local saveDebounceTime = 0.5 -- Debounce time in seconds
 
--- Function to safely load settings from the config file
 local function loadSettings()
-    if isfile(file) then
-        local success, result = pcall(function()
-            return HttpService:JSONDecode(readfile(file))
-        end)
-        if success and result then
-            GUILoadSettings = result
-        else
-            warn("Failed to load config file: " .. tostring(result))
-            GUILoadSettings = {}
-        end
-    else
-        -- Initialize with an empty JSON object
-        local success, err = pcall(function()
-            writefile(file, HttpService:JSONEncode({}))
-        end)
-        if not success then
-            warn("Failed to initialize config file: " .. tostring(err))
-        end
         GUILoadSettings = {}
-    end
 end
 
--- Function to safely save settings to the config file
-local function saveSettings()
-    if saveDebounce then return end
-    saveDebounce = true
-    task.spawn(function()
-        local success, err = pcall(function()
-            writefile(file, HttpService:JSONEncode(GUISaveSettings))
-        end)
-        if not success then
-            warn("Failed to save config file: " .. tostring(err))
-        end
-        task.wait(saveDebounceTime)
-        saveDebounce = false
-    end)
-end
 
 -- Load settings at script start
 loadSettings()
@@ -156,7 +118,7 @@ else
 end
 
 -- Theme and animation logic
-local usedtheme = "Cotton Candy"
+local usedtheme = "Galaxy"
 local changefactor = false
 local Converterdlist = {}
 local Usedlist = {}
@@ -998,7 +960,7 @@ function lib:CreateWindow(text, Position)
                 else
                     print("Toggle Save doesn't seem to function!")
                 end
-                saveSettings() -- Save settings on toggle change
+               
                 options.Callback(toggled)
             end
 
@@ -1051,7 +1013,7 @@ function lib:CreateWindow(text, Position)
                                 options.Keybind = nil
                             end
                             GUISaveSettings[options.Name].Keybind = options.Keybind ~= nil and options.Keybind.Name or nil
-                            saveSettings()
+                            
                         end
                         TextButton.Text = options.Keybind and tostring("\'"..tostring(options.Keybind.Name):upper().."\'") or "\'NONE\'"
                         BindText.Text = "Current bind:"
@@ -1154,7 +1116,7 @@ function lib:CreateWindow(text, Position)
                     options.DefaultOption = options.Options[DefaultOptionPOS]
                     GUISaveSettings[OptionsName()][options.Name]["Value"] = options.DefaultOption
                     options.Callback(options.DefaultOption)
-                    saveSettings()
+                    
                     TextButton.Text = options.Name .. ": " .. options.DefaultOption
                     breaking = false
                     --[[spawn(function ()
@@ -1360,7 +1322,7 @@ function lib:CreateWindow(text, Position)
                     SliderInner.Size = UDim2.fromScale(((options.Default - options.Min) / (options.Max - options.Min)), 1)
                 end
                 options.Callback(raven:GetValue())
-                saveSettings()
+                
                 if raven:GetValue() ~= nil then
                     GUISaveSettings[OptionsName()][options.Name] = raven:GetValue()
                 end
@@ -1533,7 +1495,7 @@ function lib:CreateWindow(text, Position)
                     MiniButtonText.TextColor3 = Color3.fromRGB(255, 255, 255)
                 end
                 task.spawn(function() options.Callback(toggled) end)
-                saveSettings()
+                
             end
     
             if options.StartingState then Toggle:SetState(true) end
@@ -1542,158 +1504,7 @@ function lib:CreateWindow(text, Position)
     end
     return Toggles
 end
---Raven WaterMark :)
-local RavenB4WaterMark = Instance.new("Frame")
-local TopRaven = Instance.new("Frame")
-local BottomRaven = Instance.new("Frame")
-local LeftSideRaven = Instance.new("Frame")
-local RightSideRaven = Instance.new("Frame")
-local RavenTextB4 = Instance.new("Frame")
-local B4Letter = Instance.new("TextLabel")
-local RavenText = Instance.new("Frame")
-local RLetter = Instance.new("TextLabel")
-local ALetter = Instance.new("TextLabel")
-local VLetter = Instance.new("TextLabel")
-local ELetter = Instance.new("TextLabel")
-local NLetter = Instance.new("TextLabel")
-local lineswidth = 3
-local textsize = 27.5
-local textboxsize = 0.15
 
-RavenB4WaterMark.Name = "Raven B4 WaterMark"
-RavenB4WaterMark.Parent = ScreenGUIFrame
-RavenB4WaterMark.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-RavenB4WaterMark.BackgroundTransparency = 1.000
-RavenB4WaterMark.BorderColor3 = Color3.fromRGB(0, 0, 0)
-RavenB4WaterMark.BorderSizePixel = 0
-RavenB4WaterMark.Position = UDim2.new(0.498525, 0, 0.10, 0)
-RavenB4WaterMark.Size = UDim2.new(0.025, 0, 0.2, 0)
-
-TopRaven.Name = "TopRaven"
-TopRaven.Parent = RavenB4WaterMark
-TopRaven.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-TopRaven.BorderColor3 = Color3.fromRGB(0, 0, 0)
-TopRaven.BorderSizePixel = 0
-TopRaven.Size = UDim2.new(0, 0, 0, lineswidth)
-TopRaven.Position = UDim2.new(0, 0, 0, 0)
-
-BottomRaven.Name = "BottomRaven"
-BottomRaven.Parent = RavenB4WaterMark
-BottomRaven.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-BottomRaven.BorderColor3 = Color3.fromRGB(0, 0, 0)
-BottomRaven.BorderSizePixel = 0
-BottomRaven.Position = UDim2.new(0, 0, 1, 0)
-BottomRaven.Size = UDim2.new(0, 0, 0, lineswidth)
-BottomRaven.Rotation = 180  
-
-LeftSideRaven.Name = "LeftSideRaven"
-LeftSideRaven.Parent = RavenB4WaterMark
-LeftSideRaven.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-LeftSideRaven.BorderColor3 = Color3.fromRGB(0, 0, 0)
-LeftSideRaven.BorderSizePixel = 0
-LeftSideRaven.Size = UDim2.new(0,lineswidth, 1, 0)
-LeftSideRaven.Position = UDim2.new(-1,0,0, 0)
-
-RightSideRaven.Name = "RightSideRaven"
-RightSideRaven.Parent = RavenB4WaterMark
-RightSideRaven.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-RightSideRaven.BorderColor3 = Color3.fromRGB(0, 0, 0)
-RightSideRaven.BorderSizePixel = 0
-RightSideRaven.Position = UDim2.new(2, 0, 0, 0)
-RightSideRaven.Size = UDim2.new(0, lineswidth, 1.015, 0)
-
-RavenTextB4.Name = "RavenTextB4"
-RavenTextB4.Parent = RavenB4WaterMark
-RavenTextB4.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-RavenTextB4.BackgroundTransparency = 1.000
-RavenTextB4.BorderColor3 = Color3.fromRGB(0, 0, 0)
-RavenTextB4.BorderSizePixel = 0
-RavenTextB4.Position = UDim2.new(1, 0, textboxsize*5, 0)
-RavenTextB4.Size = UDim2.new(1, 0, 0.25, 0)
-
-B4Letter.Name = "B4 Letter"
-B4Letter.Parent = RavenTextB4
-B4Letter.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-B4Letter.BackgroundTransparency = 1.000
-B4Letter.BorderColor3 = Color3.fromRGB(0, 0, 0)
-B4Letter.BorderSizePixel = 0
-B4Letter.Size = UDim2.new(1, 0, 1, 0)
-B4Letter.Text = "B4"
-B4Letter.TextColor3 = Color3.fromRGB(255,255,255)
-B4Letter.TextSize = textsize
-
-RavenText.Name = "RavenText"
-RavenText.Parent = RavenB4WaterMark
-RavenText.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-RavenText.BackgroundTransparency = 1.000
-RavenText.BorderColor3 = Color3.fromRGB(0, 0, 0)
-RavenText.BorderSizePixel = 0
-RavenText.Size = UDim2.new(1, 0, 1, 1)
-RavenText.Position = UDim2.new(-1, 0, 0, 0)
-
-RLetter.Name = "R Letter"
-RLetter.Parent = RavenText
-RLetter.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-RLetter.BackgroundTransparency = 1.000
-RLetter.BorderColor3 = Color3.fromRGB(0, 0, 0)
-RLetter.BorderSizePixel = 0
-RLetter.Size = UDim2.new(1, 0,textboxsize , 0)
-
-RLetter.Text = "r"
-RLetter.TextColor3 = Color3.fromRGB(255,255,255)
-RLetter.TextSize = textsize
-
-ALetter.Name = "A Letter"
-ALetter.Parent = RavenText
-ALetter.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-ALetter.BackgroundTransparency = 1.000
-ALetter.BorderColor3 = Color3.fromRGB(0, 0, 0)
-ALetter.BorderSizePixel = 0
-ALetter.Position = UDim2.new(0, 0, textboxsize, 0)
-ALetter.Size = UDim2.new(1, 0, textboxsize, 0)
-
-ALetter.Text = "a"
-ALetter.TextColor3 = Color3.fromRGB(255,255,255)
-ALetter.TextSize = textsize
-
-VLetter.Name = "V Letter"
-VLetter.Parent = RavenText
-VLetter.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-VLetter.BackgroundTransparency = 1.000
-VLetter.BorderColor3 = Color3.fromRGB(0, 0, 0)
-VLetter.BorderSizePixel = 0
-VLetter.Position = UDim2.new(0, 0, textboxsize*2, 0)
-VLetter.Size = UDim2.new(1, 0, textboxsize, 0)
-
-VLetter.Text = "v"
-VLetter.TextColor3 = Color3.fromRGB(255,255,255)
-VLetter.TextSize = textsize
-
-ELetter.Name = "E Letter"
-ELetter.Parent = RavenText
-ELetter.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-ELetter.BackgroundTransparency = 1.000
-ELetter.BorderColor3 = Color3.fromRGB(0, 0, 0)
-ELetter.BorderSizePixel = 0
-ELetter.Position = UDim2.new(0, 0, textboxsize*3, 0)
-ELetter.Size = UDim2.new(1, 0, textboxsize, 0)
-
-ELetter.Text = "e"
-ELetter.TextColor3 = Color3.fromRGB(255,255,255)
-ELetter.TextSize = textsize
-
-NLetter.Name = "N Letter"
-NLetter.Parent = RavenText
-NLetter.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-NLetter.BackgroundTransparency = 1.000
-NLetter.BorderColor3 = Color3.fromRGB(0, 0, 0)
-NLetter.BorderSizePixel = 0
-NLetter.Position = UDim2.new(0, 0, textboxsize*4, 0)
-NLetter.Size = UDim2.new(1, 0, textboxsize, 0)
-
-NLetter.Text = "n"
-NLetter.TextColor3 = Color3.fromRGB(255,255,255)
-NLetter.TextSize = textsize
 
 local function CustomTween(Part,Info,Style,Time,DelayTime)
     TweenService:Create(Part, TweenInfo.new(Time,Style,Enum.EasingDirection.Out,0,false,DelayTime), Info):Play()
@@ -1767,15 +1578,13 @@ Credits.TextSize = 14.000
 Credits.TextXAlignment = Enum.TextXAlignment.Right
 
 --Tabs
-shared:createnotification("Press \"V\" or the Raven Icon to open the GUI!",3,"Raven B4 Loaded")
+-- shared:createnotification("Press \"V\" or the Raven Icon to open the GUI!",3,"Raven B4 Loaded")
 
-shared.RavenB4TabName1 = shared.RavenB4TabName1 or "combat" -- litteraly only made this for the ps99 version, more will come sooner or later tbh
-Combat = lib:CreateWindow(shared.RavenB4TabName1,UDim2.new(0.03, 0, 0.1, 0),"15047268885")
-Blatant = lib:CreateWindow("blatant",UDim2.new(0.23, 0, 0.1, 0),"15090672783")
-Legit = lib:CreateWindow("client",UDim2.new(0.4, 0, 0.4, 0),"15090649788")
-Render = lib:CreateWindow("render",UDim2.new(0.62, 0, 0.1, 0),"15090679835")
-Utility = lib:CreateWindow("utility",UDim2.new(0.82, 0, 0.1, 0),"15090688384")
-Client = lib:CreateWindow("client",UDim2.new(0.435, 0, 0.4, 0),"15090649788")
+
+
+Legit = lib:CreateWindow("Legit",UDim2.new(0.4, 0, 0.4, 0),"0")
+Render = lib:CreateWindow("Render",UDim2.new(0.62, 0, 0.1, 0),"0")
+Client = lib:CreateWindow("Client",UDim2.new(0.435, 0, 0.4, 0),"0")
 
 GUIToggle = Client:CreateToggle({
     Name = "GUI",
@@ -1809,7 +1618,7 @@ GUIToggle:CreateToggle({
     Callback = function(Callback)
         if Callback then
             -- Toggle off all modules and disconnect their connections
-            saveSettings()
+            
             for _, toggle in ipairs(allToggles) do
                 if toggle.SetState then
                     toggle:SetState(false)
@@ -1839,6 +1648,8 @@ GUIToggle:CreateToggle({
         end
     end
 })
+
+
 GUIToggle:CreateToggle({
     Name = "ReInject",
     Animation = false,
@@ -1873,7 +1684,7 @@ GUIToggle:CreateToggle({
                     pcall(coroutine.close, thread)
                 end
             end
-            loadstring(readfile("RavenB4s/ActualClient/ravenloader.lua"))()
+            
         end
     end
 })
@@ -1904,9 +1715,9 @@ if shared.WaterMark ~= nil then
     TextLabel.TextXAlignment = Enum.TextXAlignment.Left
     TextLabel.Visible = false
 end
+
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
-local TextChatService = game:GetService("TextChatService")
 local raventag = Client:CreateToggle({
     Name = "RavenB4 Tag",
     Callback = function(Callback) 
@@ -1926,11 +1737,8 @@ local raventag = Client:CreateToggle({
 			return properties
 		end
 end})
-local bedwarsids = {6872265039,6872274481,8444591321,8560631822}
-local inbedwars = false
-if table.find(bedwarsids,game.PlaceId) then
-    inbedwars = true
-end
+
+
 local TweenService = game:GetService("TweenService")
 function IsAlive(plr)
     plr = plr or LocalPlayer
@@ -1987,29 +1795,6 @@ end)
 local CapeAngle = nil
 Client:CreateToggle({
     Name = "Raven Cape",
-    Callback = function(Callback) 
-        RavenCape = Callback
-        if RavenCape and IsAlive(LocalPlayer)then
-            CreateCape()
-        else
-            if LocalPlayer.Character:FindFirstChild("RavenCape") then LocalPlayer.Character:FindFirstChild("RavenCape"):Destroy() end
-        end
-        repeat task.wait(0.5)
-            if IsAlive(LocalPlayer) then
-                if LocalPlayer.Character.Humanoid.MoveDirection.Magnitude > 0 and LocalPlayer.Character:FindFirstChild("RavenCape") and CapeAngle then
-                    CapeAngle = (LocalPlayer.Character.HumanoidRootPart.Velocity.magnitude < 45 and (-1 *(LocalPlayer.Character.HumanoidRootPart.Velocity.magnitude / 30)) or -1.5)
-                else
-                    CapeAngle = -0.2
-                end
-                if LocalPlayer.Character:FindFirstChild("RavenCape") then
-                    TweenService:Create(LocalPlayer.Character:FindFirstChild("RavenCape"):FindFirstChild("Motor"), TweenInfo.new(0.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {CurrentAngle = CapeAngle}):Play()
-                end
-            end
-        until not RavenCape
-end})
-local CapeAngle = nil
-Client:CreateToggle({
-    Name = "AutoToxic",
     Callback = function(Callback) 
         RavenCape = Callback
         if RavenCape and IsAlive(LocalPlayer)then
